@@ -1,1 +1,565 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Threads Glass</title>
+<style>
+:root{--bg:#0d0d0d;--fg:#f5f5f5;--mute:#8a8a8e;--line:#262628;--glass:rgba(255,255,255,.09);--pill:rgba(255,255,255,.18);--edge:rgba(255,255,255,.22);--blur:12px;--shadow-dark:rgba(0,0,0,.52);--pill-bg:rgba(255,255,255,.88);--shadow-light:rgba(255,255,255,.04);--nav-glow-rgb:168,201,255;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#fff;--fg:#101010;--mute:#777;--line:#e8e8e8;--glass:rgba(255,255,255,.35);--pill:rgba(0,0,0,.1);--edge:rgba(0,0,0,.12);--shadow-dark:rgba(148,160,181,.36);--pill-bg:rgba(0,0,0,.08);--shadow-light:rgba(255,255,255,.78);--nav-glow-rgb:205,228,255}}
+:root[data-theme="light"]{--bg:#fff;--fg:#101010;--mute:#777;--line:#e8e8e8;--glass:rgba(255,255,255,.35);--pill:rgba(0,0,0,.1);--edge:rgba(0,0,0,.12);--shadow-dark:rgba(148,160,181,.36);--pill-bg:rgba(0,0,0,.08);--shadow-light:rgba(255,255,255,.78);--nav-glow-rgb:205,228,255}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%}
+body{background:var(--bg);color:var(--fg);font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;justify-content:center}
+#app{width:100%;max-width:480px;height:100%;position:relative;overflow:hidden}
+.view{position:absolute;inset:0;overflow-y:auto;padding:14px 16px calc(120px + env(safe-area-inset-bottom,0px));display:none}
+.view.on{display:block}
+h1{font-size:22px;margin:6px 0 14px;letter-spacing:-.3px}
+.logo{display:grid;place-items:center;margin:2px 0 10px}
+.post{display:flex;gap:12px;padding:14px 0;border-bottom:1px solid var(--line)}
+.av{flex:none;width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:700;font-size:15px;color:#fff}
+.body{flex:1;min-width:0}
+.name{font-weight:600;font-size:15px}.name span{color:var(--mute);font-weight:400;margin-left:6px}
+.txt{margin:3px 0 10px;line-height:1.4;font-size:15px;overflow-wrap:anywhere}
+.acts{display:flex;gap:18px;color:var(--mute);font-size:14px}
+.acts button{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px}
+.acts button.liked{color:#ff3040}
+.row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}
+.card{padding:16px 0}
+.card p{color:var(--mute);font-size:13px;margin:4px 0 0;line-height:1.4}
+.btn{background:var(--fg);color:var(--bg);border:0;border-radius:12px;padding:10px 16px;font-weight:600;font-size:15px;cursor:pointer}
+textarea{width:100%;min-height:140px;background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit;resize:none;margin-bottom:12px}
+.profile-head{display:flex;justify-content:space-between;align-items:center}
+.gear{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--pill)}
 
+/* developed © Maxuiux */
+.slider-container {
+  position: relative;
+  width: 320px;
+  height: 10px;
+  background: #D6D6DA;
+  border-radius: 999px;
+}
+
+.slider-progress {
+  position: absolute;
+  height: 100%;
+  background: linear-gradient(117deg, #49a3fc 0%, #3681ee 100%);
+  border-radius: 999px;
+  width: 0%;
+  z-index: 1;
+}
+
+.slider-thumb-glass {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 65px;
+  height: 42px;
+  border-radius: 999px;
+  cursor: pointer;
+  z-index: 2;
+  background-color: #fff;
+  box-shadow: 0 1px 8px 0 rgba(0, 30, 63, 0.1), 0 0 2px 0 rgba(0, 9, 20, 0.1);
+  overflow: hidden;
+  transition: transform 0.15s ease, height 0.15s ease;
+}
+
+.slider-thumb-glass-filter {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  backdrop-filter: blur(0.6px);
+  -webkit-backdrop-filter: blur(0.6px);
+  filter: url(#mini-liquid-lens);
+}
+
+.slider-thumb-glass-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.slider-thumb-glass-specular {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  border-radius: inherit;
+  box-shadow:
+    inset 1px 1px 0 rgba(69, 168, 243, 0.2),
+    inset 1px 3px 0 rgba(28, 63, 90, 0.05),
+    inset 0 0 22px rgb(255 255 255 / 60%),
+    inset -1px -1px 0 rgba(69, 168, 243, 0.12);
+}
+
+.slider-thumb-glass-filter,
+.slider-thumb-glass-overlay,
+.slider-thumb-glass-specular {
+  opacity: 0;
+}
+
+.slider-thumb-glass.active {
+  background-color: transparent;
+  box-shadow: none;
+}
+
+.slider-thumb-glass.active .slider-thumb-glass-filter,
+.slider-thumb-glass.active .slider-thumb-glass-overlay,
+.slider-thumb-glass.active .slider-thumb-glass-specular {
+  opacity: 1;
+}
+
+.slider-thumb-glass:active {
+  transform: translate(-50%, -50%) scaleY(0.98) scaleX(1.1);
+}
+/* developed © Maxuiux */
+
+/* só para caber no app (não altera o slider) */
+.slider-wrap{padding:26px 36px 14px;touch-action:none}
+.slider-wrap .slider-container{width:100%}
+.val{display:flex;justify-content:space-between;color:var(--mute);font-size:13px;margin:0 6px}
+
+/* Barra inferior */
+.nav{position:absolute;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));height:68px;border-radius:34px;display:flex;align-items:center;padding:6px;gap:2px;background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(var(--blur)) saturate(1.7) brightness(var(--bright,1));-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7) brightness(var(--bright,1));box-shadow:inset 1px 1px 1px rgba(255,255,255,.25),0 10px 30px rgba(0,0,0,.35);z-index:5}
+.tab{all:unset;cursor:pointer;flex:1;height:100%;border-radius:28px;display:grid;place-items:center;position:relative;color:var(--fg);transition:background .2s}
+.tab svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:fill .2s ease}
+.tab.on svg.fill{fill:currentColor}
+.dot{position:absolute;top:20px;right:calc(50% - 15px);width:8px;height:8px;border-radius:50%;background:#ff3040}
+.dot.hide{display:none}
+
+/* Indicador deslizante (estilo iOS 26) */
+.nav{touch-action:none;--gx:50%;--gy:50%;--ga:0;transition:transform .28s cubic-bezier(.22,1,.36,1)}
+.nav.engaged{transform:scale(1.03)}
+.nav-glow{position:absolute;inset:0;border-radius:999px;clip-path:inset(0 round 999px);pointer-events:none;z-index:0;background:radial-gradient(240px 150px at var(--gx) var(--gy),rgba(var(--nav-glow-rgb),var(--ga)) 0%,rgba(var(--nav-glow-rgb),0) 74%);transition:background .18s ease}
+.tab{z-index:2}
+.tab-indicator{position:absolute;left:6px;top:6px;height:calc(100% - 12px);width:60px;border-radius:999px;z-index:6;pointer-events:none;transform-origin:center center;will-change:left,width,transform;background:var(--pill);box-shadow:inset 0 1px 0 rgba(255,255,255,.46),10px 10px 24px var(--shadow-dark),-8px -8px 20px var(--shadow-light);transition:left .24s cubic-bezier(.2,.9,.22,1),width .24s cubic-bezier(.2,.9,.22,1),transform .25s ease,background-color .25s ease,box-shadow .25s ease}
+.tab-indicator.interacting{z-index:999;transform:scale(1.45,1.5);background:var(--pill)}
+.nav.dragging .tab-indicator{transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease}
+.head{position:absolute;top:0;left:0;right:0;height:88px;display:grid;place-items:start center;padding-top:14px;font-weight:800;font-size:17px;letter-spacing:-.2px;z-index:4;pointer-events:none;opacity:0;transform:translateY(-10px);transition:opacity .25s ease,transform .25s ease;background:linear-gradient(to bottom,var(--bg) 0%,color-mix(in srgb,var(--bg) 80%,transparent) 50%,transparent 100%)}
+.hb{display:flex;align-items:center;gap:7px}
+.head.show{opacity:1;transform:none}
+.tab{transition:color .2s ease}
+
+/* Liquid toggle (CSS do usuário) */
+@layer toggle,transitions;
+@layer transitions{
+:root{--transition:.2s;--ease:ease-out}
+[data-bounce='true']:has(:is(button:active,[data-pressed="true"])){--transition:.6s;--ease:linear(0 0%,.6091 3.69%,1.0259 7.24%,1.1733 9.05%,1.283 10.92%,1.3562 12.87%,1.3948 14.95%,1.4014 16.03%,1.3999 17.16%,1.3731 19.64%,1.3202 22.27%,1.1394 29.39%,1.0582 33.17%,.9943 37.45%,.9734 39.64%,.9593 41.92%,.9505 45.08%,.9517 48.7%,.9924 63.02%,1.0046 71.2%,1.0061 78.24%,1 100%)}
+.indicator--masked .mask{translate:calc((var(--complete)/100)*(100cqi - 60cqi - (0*var(--border)))) -50%;transition-property:height,width,margin,scale;transition-duration:var(--transition);transition-timing-function:var(--ease);will-change:height,width,margin}
+.wrapper{clip-path:inset(0 0 0 0 round 100px);filter:blur(6px);transition:filter var(--transition) var(--ease)}
+[aria-pressed='true']:not([data-active='true']) .liquid__track{left:calc(var(--border)*6)}
+.liquid__track{left:0;transition-property:height,width,filter,left;transition-duration:var(--transition);transition-timing-function:var(--ease);translate:calc((var(--complete)/100)*(100cqi - 100% - (6*var(--border)))) -50%}
+[data-mapped=false] .liquid__track{transition-property:height,width,filter,left,background;transition-duration:var(--transition),var(--transition),var(--transition),var(--transition),calc(var(--transition)*.5);transition-timing-function:var(--ease),var(--ease),var(--ease),var(--ease),ease-out}
+.indicator__liquid{translate:calc((var(--complete)/100)*(100cqi - 100% - (2*var(--border)))) -50%;transition-property:scale;transition-duration:var(--transition);transition-timing-function:var(--ease)}
+.indicator__liquid :is(.cover,.shadow){transition:opacity var(--transition) var(--ease)}
+[data-active='true'] .indicator--masked .mask,.liquid-toggle:active .indicator--masked .mask{height:calc((100% - (2*var(--border)))*(1.65 - (var(--delta,0)*.025)));width:calc((60% - (2*var(--border)))*(1.65 + (var(--delta,0)*.025)));margin-left:calc((60% - (2*var(--border)))*((.65 + (var(--delta,0)*.025))*-.5))}
+[data-active='true'] .indicator__liquid,.liquid-toggle:active .indicator__liquid{scale:calc(1.65 + (var(--delta,0)*.025)) calc(1.65 - (var(--delta,0)*.025))}
+[data-active='true'] .wrapper,.liquid-toggle:active .wrapper{filter:blur(0px)}
+[data-active='true'] .indicator__liquid .shadow,.liquid-toggle:active .indicator__liquid .shadow{opacity:1}
+[data-active='true'] .indicator__liquid .cover,.liquid-toggle:active .indicator__liquid .cover{opacity:0}
+[data-active='true'] .indicator__liquid .liquid__track,.liquid-toggle:active .indicator__liquid .liquid__track{left:calc(var(--border)*3);height:calc((var(--height)*1px) - (6*var(--border)))}
+}
+@layer toggle{
+[data-mapped=false] .liquid-toggle{--progress:round(down,var(--complete),85);--checked:hsl(var(--hue,144),calc((8 + (var(--progress)/85*(92)))*1%),calc((81 - (var(--progress)/85*(81 - 43)))*1%));.indicator,.indicator--masked{transition:background calc(var(--transition)*.5) ease-out}.liquid__shadow{transition:box-shadow calc(var(--transition)*.5) ease-out}}
+.liquid-toggle{--unchecked:hsl(218,8%,81%);--checked:hsl(var(--hue,144),calc((8 + (var(--complete)/100*(92)))*1%),calc((81 - (var(--complete)/100*(81 - 43)))*1%));--control:hsl(300,100%,100%);--border:5px;--width:140;--height:60;--complete:0;height:calc(var(--height)*1px);width:calc(var(--width)*1px);border-radius:100px;border:0;padding:0;cursor:pointer;position:relative;overflow:visible;container-type:inline-size;background:#0000;transition:outline var(--transition) var(--ease);outline-offset:2px;*{pointer-events:none}}
+.liquid-toggle:focus-visible{outline:4px solid color-mix(in oklch,var(--checked),#0000)}
+.liquid-toggle:active{outline:none}
+.liquid-toggle[data-active='true']:focus-visible{outline:4px solid #0000}
+.indicator{border-radius:100px;pointer-events:none;height:100%;width:100%;background:var(--checked);position:absolute;top:50%;scale:1;left:50%;translate:-50% -50%}
+.knockout{height:calc(var(--height)*1px);width:calc(var(--width)*1px);border-radius:100px;filter:url(#remove-black);position:absolute;inset:0;will-change:filter,scale;transform:translate3d(0,0,0)}
+.indicator--masked{background:var(--checked);z-index:12;height:100%;width:100%;translate:-50% -50%;container-type:inline-size;.mask{position:absolute;height:calc(100% - (2*var(--border)));width:calc(60% - (2*var(--border)));top:50%;background:#000;left:var(--border);border-radius:100px}}
+.wrapper{position:absolute;inset:0;border-radius:100px}
+.liquids{position:absolute;inset:0;transform:translate3d(0,0,0);border-radius:100px;overflow:hidden;filter:url(#goo);.liquid__shadow{position:absolute;inset:0;box-shadow:inset 0 0 3px 4px var(--checked),inset calc(((var(--complete)/100)*8px) + -4px) 0 3px 4px var(--checked);border-radius:100px}.liquid__track{height:calc((var(--height)*1px) - (0*var(--border)));width:calc((var(--width)*1px) - (0*var(--border)));background:var(--checked);border-radius:100px;position:absolute;top:50%}}
+.indicator__liquid{position:absolute;height:calc(100% - (2*var(--border)));width:calc(60% - (2*var(--border)));container-type:inline-size;top:50%;background:#0000;left:var(--border);border-radius:100px;.shadow{opacity:0;position:absolute;inset:0;border-radius:100px;box-shadow:1px -1px 2px hsl(0 0% 100%/.5) inset,0 -1px 2px hsl(0 0% 100%/.5) inset,-1px -1px 2px hsl(0 0% 100%/.5) inset,1px 1px 2px hsl(0 0% 30%/.5) inset,-8px 4px 10px -6px hsl(0 0% 30%/.25) inset,-1px 1px 6px hsl(0 0% 30%/.25) inset,-1px -1px 8px hsl(0 0% 60%/.15),1px 1px 2px hsl(0 0% 30%/.15),2px 2px 6px hsl(0 0% 30%/.15),-2px -1px 2px hsl(0 0% 100%/.25) inset,3px 6px 16px -6px hsl(0 0% 30%/.5);z-index:20}.cover{position:absolute;inset:0;background:#fff;border-radius:100px}}
+}
+.liquid-toggle.sm{--width:84;--height:38;--border:3px}
+.chromium .slider-thumb-glass.active .slider-thumb-glass-filter,.chromium .slider-thumb-glass.active .slider-thumb-glass-overlay,.chromium .slider-thumb-glass.active .slider-thumb-glass-specular{opacity:0}
+:root{--spring:linear(0 0%,.6091 3.69%,1.0259 7.24%,1.1733 9.05%,1.283 10.92%,1.3562 12.87%,1.3948 14.95%,1.4014 16.03%,1.3999 17.16%,1.3731 19.64%,1.3202 22.27%,1.1394 29.39%,1.0582 33.17%,.9943 37.45%,.9734 39.64%,.9593 41.92%,.9505 45.08%,.9517 48.7%,.9924 63.02%,1.0046 71.2%,1.0061 78.24%,1 100%)}
+.tab-indicator{transition:left .24s cubic-bezier(.2,.9,.22,1),width .24s cubic-bezier(.2,.9,.22,1),transform .6s var(--spring),background-color .25s ease,box-shadow .25s ease}
+.nav.dragging .tab-indicator{transition:transform .6s var(--spring),background-color .2s ease,box-shadow .2s ease}
+.slider-thumb-glass{transition:transform .6s var(--spring),height .15s ease}
+.slider-thumb-glass.active,.slider-thumb-glass.active:active{transform:translate(-50%,-50%) scale(1.18,1.1)}
+@keyframes pillPulse{0%,100%{transform:scale(1.45,1.5)}50%{transform:scale(1.4,1.46)}}
+@keyframes thumbPulse{0%,100%{transform:translate(-50%,-50%) scale(1.18,1.1)}50%{transform:translate(-50%,-50%) scale(1.15,1.08)}}
+.tab-indicator.interacting.sliding{animation:pillPulse .9s ease-in-out infinite}
+.slider-thumb-glass.active.sliding{animation:thumbPulse .9s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){.tab-indicator.interacting.sliding,.slider-thumb-glass.active.sliding{animation:none}}
+.slider-progress{transition:transform .35s var(--spring),filter .25s ease,box-shadow .25s ease;transform-origin:left center}
+[data-pressed=true] .liquid__track{min-height:30px}
+.tab svg{transition:fill .2s ease,filter .3s ease,opacity .3s ease}
+.tab svg,.tab .dot{filter:none!important}
+/* visual do feed igual ao app do Threads */
+.av{width:44px;height:44px}
+.topbar{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;margin:0 -8px 4px}
+.topbar .tb{all:unset;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;color:var(--mute)}
+.topbar .tb svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.topbar .logo{margin:0}
+.composer{display:flex;gap:12px;align-items:center;padding:12px 0 16px;border-bottom:1px solid var(--line);cursor:pointer}
+.composer b{font-size:15px;font-weight:600}.composer .ph{color:var(--mute);font-size:15px;margin-top:2px}
+.post{position:relative}
+.avw{position:relative;flex:none;align-self:flex-start}
+.plus{position:absolute;right:-3px;bottom:-3px;width:20px;height:20px;border-radius:50%;background:var(--fg);color:var(--bg);border:2px solid var(--bg);display:grid;place-items:center}
+.plus svg{width:11px;height:11px;stroke:currentColor;stroke-width:3.4;fill:none;stroke-linecap:round}
+.post.th{border-bottom:0;padding-bottom:6px}
+.post.th::before{content:'';position:absolute;left:21px;top:66px;bottom:0;width:2px;border-radius:2px;background:var(--line)}
+.name{display:flex;align-items:center;gap:6px}.name span{margin-left:0}
+.vf{width:14px;height:14px;flex:none}
+.more{all:unset;cursor:pointer;margin-left:auto;color:var(--fg);font-weight:800;letter-spacing:1px;padding:0 4px}
+.txt{margin:4px 0 10px}
+.acts{gap:20px;align-items:center}
+.acts svg.ic{width:22px;height:22px;fill:none;stroke:var(--fg);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.acts button.liked svg.ic{fill:#ff3040;stroke:#ff3040}
+.sbar{display:flex;gap:6px;align-items:center;margin-bottom:8px}.sbar .back{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;font-size:28px;color:var(--fg)}
+.sin{flex:1;min-width:0;background:var(--pill);color:var(--fg);border:0;border-radius:14px;padding:12px 14px;font:inherit;font-size:16px}
+.btn.sm{padding:7px 14px;font-size:13px}.btn.sm.on{background:var(--pill);color:var(--fg)}
+#drawer{position:absolute;inset:0;z-index:30}#drawer[hidden]{display:none}.dbg{position:absolute;inset:0;background:rgba(0,0,0,.4)}
+.dpn{position:absolute;left:0;top:0;bottom:0;width:74%;max-width:300px;background:var(--bg);color:var(--fg);padding:calc(24px + env(safe-area-inset-top,0px)) 20px;box-shadow:10px 0 40px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:4px}
+.dpn button{all:unset;cursor:pointer;padding:14px 8px;font-size:18px;font-weight:600;border-radius:12px}.dpn button:active{background:var(--pill)}
+.gl{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lang-row{cursor:pointer}.cur{color:var(--mute);font-weight:500}
+#lang{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:20px}#lang[hidden]{display:none}
+.lbg{position:absolute;inset:0;background:rgba(0,0,0,.5);animation:lfade .3s ease}
+.lcard{position:relative;width:min(100%,400px);min-height:min(600px,86%);max-height:92%;display:flex;flex-direction:column;align-items:center;padding:30px 20px 20px;border-radius:46px;
+ background:rgba(145,145,150,.62);backdrop-filter:blur(26px) saturate(1.7);-webkit-backdrop-filter:blur(26px) saturate(1.7);border:1px solid rgba(255,255,255,.6);
+ box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -1px 1px rgba(255,255,255,.2),0 30px 70px rgba(0,0,0,.4);color:#111;animation:lpop .45s cubic-bezier(.2,1.3,.4,1)}
+@keyframes lpop{from{opacity:0;transform:scale(.88) translateY(16px)}to{opacity:1;transform:none}}@keyframes lfade{from{opacity:0}to{opacity:1}}
+.lglobe{width:84px;height:84px;fill:none;stroke:#111;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lcard h2{margin:12px 0 6px;font-size:26px;letter-spacing:-.8px;text-align:center}.ld{margin:0;text-align:center;color:rgba(0,0,0,.5);font-size:16px;line-height:1.4}
+.llist{align-self:stretch;flex:1;overflow-y:auto;margin-top:18px;display:flex;flex-direction:column;gap:10px}
+.lrow{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-radius:22px;color:#111;font-size:18px;font-weight:600;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);transition:transform .2s cubic-bezier(.2,1.4,.4,1),background .2s}
+.lrow:active{transform:scale(.97)}.lrow.on{background:rgba(255,255,255,.36);border-color:rgba(255,255,255,.75)}
+.lck{width:24px;height:24px;border-radius:50%;border:2px solid rgba(0,0,0,.25);flex:none}
+.lrow.on .lck{border-color:#007aff;background:#007aff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 12.5l3.5 3.5 7.5-8' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/80% no-repeat}
+.lbtns{align-self:stretch;display:flex;gap:12px;margin-top:18px}
+.lb{all:unset;cursor:pointer;flex:1;text-align:center;padding:16px 0;border-radius:999px;font-size:18px;font-weight:600;transition:transform .2s cubic-bezier(.2,1.4,.4,1)}.lb:active{transform:scale(.95)}
+.lb.sec{color:#1c1c1e;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.55)}
+.lb.pri{color:#fff;background:#007aff;border:1px solid rgba(255,255,255,.3);box-shadow:0 6px 18px rgba(0,122,255,.35)}
+.wm{display:inline-flex;align-items:center;gap:.082em;font-size:30px;line-height:1;color:var(--fg)}
+.wg{height:.985em;width:auto;fill:currentColor;flex:none}
+.wt{height:.8em;width:auto;fill:currentColor;flex:none}
+.head .wm{font-size:27px}
+</style>
+</head>
+<body>
+<!-- developed © Maxuiux -->
+<svg width="0" height="0" style="position:absolute">
+    <filter id="mini-liquid-lens" x="-50%" y="-50%" width="200%" height="200%">
+      <feImage x="0" y="0" result="normalMap" xlink:href="data:image/svg+xml;utf8,
+      <svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'>
+        <radialGradient id='invmap' cx='50%' cy='50%' r='75%'>
+          <stop offset='0%' stop-color='rgb(128,128,255)'/>
+          <stop offset='90%' stop-color='rgb(255,255,255)'/>
+        </radialGradient>
+        <rect width='100%' height='100%' fill='url(#invmap)'/>
+      </svg>" />
+      <feDisplacementMap in="SourceGraphic" in2="normalMap" scale="-252" xChannelSelector="R" yChannelSelector="G"
+        result="displaced" />
+      <feMerge>
+        <feMergeNode in="displaced" />
+      </feMerge>
+    </filter>
+  </svg>
+<!-- developed © Maxuiux -->
+
+<svg width="0" height="0" style="position:absolute">
+</svg>
+
+<svg width="0" height="0" style="position:absolute"><defs>
+ <filter id="goo"><feGaussianBlur in="SourceGraphic" stdDeviation="4" result="b"/><feColorMatrix in="b" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 18 -7" result="g"/><feComposite in="SourceGraphic" in2="g" operator="atop"/></filter>
+ <filter id="remove-black" color-interpolation-filters="sRGB"><feColorMatrix type="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 50 50 50 0 0"/></filter>
+</defs></svg>
+<svg width="0" height="0" style="position:absolute"><defs>
+ <symbol id="i-globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9.3"/><ellipse cx="12" cy="12" rx="4.2" ry="9.3"/><path d="M2.7 12h18.6M4.1 7.3h15.8M4.1 16.7h15.8"/></symbol>
+ <symbol id="i-glyph" viewBox="0 0 43 48"><path fill-rule="evenodd" d="M30.62 2.79Q29.50 2.50 28.54 2.50Q27.58 2.50 27.17 2.38Q26.75 2.25 25.67 2.12Q24.58 2.00 24.08 2.08Q23.58 2.17 22.58 2.17Q21.58 2.17 20.33 2.54Q19.08 2.92 18.46 3.00Q17.83 3.08 17.12 3.42Q16.42 3.75 15.62 3.88Q14.83 4.00 14.21 4.38Q13.58 4.75 12.88 5.04Q12.17 5.33 10.75 6.46Q9.33 7.58 8.25 8.71Q7.17 9.83 6.25 11.25Q5.33 12.67 4.50 14.42Q3.67 16.17 3.54 16.83Q3.42 17.50 3.21 17.96Q3.00 18.42 2.79 19.25Q2.58 20.08 2.29 22.17Q2.00 24.25 2.08 26.79Q2.17 29.33 2.46 30.25Q2.75 31.17 3.00 32.38Q3.25 33.58 3.50 33.96Q3.75 34.33 4.50 35.92Q5.25 37.50 5.67 37.92Q6.08 38.33 6.46 38.92Q6.83 39.50 7.62 40.29Q8.42 41.08 9.29 41.62Q10.17 42.17 10.62 42.62Q11.08 43.08 11.88 43.38Q12.67 43.67 13.08 44.00Q13.50 44.33 14.00 44.42Q14.50 44.50 14.96 44.71Q15.42 44.92 16.25 45.12Q17.08 45.33 19.21 45.62Q21.33 45.92 21.83 45.83Q22.33 45.75 23.75 45.75Q25.17 45.75 25.83 45.46Q26.50 45.17 27.79 45.00Q29.08 44.83 30.42 44.21Q31.75 43.58 33.62 42.33Q35.50 41.08 36.04 40.54Q36.58 40.00 36.96 39.29Q37.33 38.58 37.83 38.00Q38.33 37.42 38.42 36.92Q38.50 36.42 38.96 35.33Q39.42 34.25 39.46 33.71Q39.50 33.17 39.62 32.75Q39.75 32.33 39.75 31.92Q39.75 31.50 39.46 30.62Q39.17 29.75 39.12 29.04Q39.08 28.33 39.00 28.08Q38.92 27.83 38.17 26.62Q37.42 25.42 36.50 24.50Q35.58 23.58 34.88 23.21Q34.17 22.83 34.00 22.67Q33.83 22.50 33.38 21.42Q32.92 20.33 32.92 19.38Q32.92 18.42 32.83 18.12Q32.75 17.83 31.83 16.21Q30.92 14.58 30.58 14.33Q30.25 14.08 29.75 13.96Q29.25 13.83 28.29 13.08Q27.33 12.33 26.96 12.21Q26.58 12.08 24.00 12.04Q21.42 12.00 21.04 12.12Q20.67 12.25 20.17 12.58Q19.67 12.92 19.04 13.04Q18.42 13.17 18.04 13.50Q17.67 13.83 17.00 14.21Q16.33 14.58 16.17 14.96Q16.00 15.33 15.67 15.71Q15.33 16.08 15.29 16.38Q15.25 16.67 16.33 17.71Q17.42 18.75 17.62 18.83Q17.83 18.92 18.58 18.88Q19.33 18.83 20.29 17.96Q21.25 17.08 21.46 17.00Q21.67 16.92 23.29 16.88Q24.92 16.83 25.29 16.96Q25.67 17.08 26.25 17.67Q26.83 18.25 27.08 18.79Q27.33 19.33 27.58 19.67Q27.83 20.00 27.83 20.25Q27.83 20.50 27.58 20.71Q27.33 20.92 26.79 20.75Q26.25 20.58 24.42 20.58Q22.58 20.58 21.96 20.79Q21.33 21.00 20.50 21.00Q19.67 21.00 18.29 21.62Q16.92 22.25 16.33 22.62Q15.75 23.00 14.96 23.75Q14.17 24.50 13.71 25.33Q13.25 26.17 13.12 26.83Q13.00 27.50 13.04 28.79Q13.08 30.08 13.25 30.62Q13.42 31.17 13.79 31.79Q14.17 32.42 14.83 33.17Q15.50 33.92 16.04 34.33Q16.58 34.75 16.96 34.83Q17.33 34.92 18.04 35.33Q18.75 35.75 20.96 35.83Q23.17 35.92 24.92 35.38Q26.67 34.83 27.54 34.29Q28.42 33.75 29.50 32.58Q30.58 31.42 30.79 30.88Q31.00 30.33 31.42 29.71Q31.83 29.08 31.92 28.75Q32.00 28.42 32.21 28.21Q32.42 28.00 32.79 28.00Q33.17 28.00 33.50 28.29Q33.83 28.58 34.29 29.50Q34.75 30.42 34.75 31.54Q34.75 32.67 34.54 33.62Q34.33 34.58 33.88 35.12Q33.42 35.67 33.21 36.17Q33.00 36.67 32.29 37.38Q31.58 38.08 31.08 38.42Q30.58 38.75 28.33 39.79Q26.08 40.83 25.62 40.83Q25.17 40.83 24.42 41.00Q23.67 41.17 21.96 41.17Q20.25 41.17 19.96 41.08Q19.67 41.00 19.00 41.00Q18.33 41.00 17.50 40.79Q16.67 40.58 14.67 39.62Q12.67 38.67 10.96 36.96Q9.25 35.25 9.08 34.79Q8.92 34.33 8.46 33.54Q8.00 32.75 7.83 31.92Q7.67 31.08 7.42 30.42Q7.17 29.75 7.04 28.67Q6.92 27.58 6.92 25.46Q6.92 23.33 7.12 22.58Q7.33 21.83 7.42 21.12Q7.50 20.42 7.67 20.08Q7.83 19.75 7.92 18.96Q8.00 18.17 9.04 16.17Q10.08 14.17 10.62 13.46Q11.17 12.75 11.96 11.96Q12.75 11.17 14.04 10.17Q15.33 9.17 16.71 8.50Q18.08 7.83 18.79 7.75Q19.50 7.67 20.04 7.38Q20.58 7.08 20.92 7.00Q21.25 6.92 21.96 6.92Q22.67 6.92 22.96 6.83Q23.25 6.75 25.79 6.83Q28.33 6.92 29.00 7.17Q29.67 7.42 30.08 7.46Q30.50 7.50 31.38 7.88Q32.25 8.25 33.71 9.33Q35.17 10.42 35.62 10.88Q36.08 11.33 36.62 12.21Q37.17 13.08 37.38 13.21Q37.58 13.33 37.92 13.29Q38.25 13.25 38.75 13.04Q39.25 12.83 40.12 12.04Q41.00 11.25 41.00 10.75Q41.00 10.25 40.12 8.96Q39.25 7.67 39.00 7.42Q38.75 7.17 38.17 6.88Q37.58 6.58 36.71 5.71Q35.83 4.83 35.62 4.71Q35.42 4.58 34.92 4.50Q34.42 4.42 33.79 4.17Q33.17 3.92 32.46 3.50Q31.75 3.08 30.62 2.79zM27.00 25.50Q27.25 25.67 27.21 26.50Q27.17 27.33 26.42 28.33Q25.67 29.33 25.33 29.62Q25.00 29.92 24.00 30.38Q23.00 30.83 22.71 30.92Q22.42 31.00 21.38 30.96Q20.33 30.92 19.50 30.33Q18.67 29.75 18.38 29.42Q18.08 29.08 18.04 28.75Q18.00 28.42 18.58 27.54Q19.17 26.67 19.38 26.46Q19.58 26.25 20.50 25.83Q21.42 25.42 21.83 25.38Q22.25 25.33 22.88 25.12Q23.50 24.92 24.46 24.92Q25.42 24.92 26.08 25.12Q26.75 25.33 27.00 25.50z"/></symbol>
+ <symbol id="i-wordmark" viewBox="0 0 182 39"><path fill-rule="evenodd" d="M71.29 9.58Q71.08 9.25 70.21 8.88Q69.33 8.50 68.42 8.50Q67.50 8.50 66.17 8.75Q64.83 9.00 63.83 9.71Q62.83 10.42 62.17 11.12Q61.50 11.83 61.29 12.29Q61.08 12.75 60.88 12.96Q60.67 13.17 60.50 13.17Q60.33 13.17 60.17 12.96Q60.00 12.75 60.00 12.46Q60.00 12.17 60.21 11.75Q60.42 11.33 60.42 10.50Q60.42 9.67 60.25 9.46Q60.08 9.25 59.79 9.12Q59.50 9.00 57.08 9.00Q54.67 9.00 54.42 9.17Q54.17 9.33 54.08 9.50Q54.00 9.67 53.96 10.38Q53.92 11.08 53.71 11.79Q53.50 12.50 53.50 12.92Q53.50 13.33 53.04 15.21Q52.58 17.08 52.50 17.92Q52.42 18.75 52.25 19.25Q52.08 19.75 52.04 20.67Q52.00 21.58 51.75 22.54Q51.50 23.50 51.46 24.12Q51.42 24.75 51.25 25.25Q51.08 25.75 51.04 26.67Q51.00 27.58 50.75 28.54Q50.50 29.50 50.50 29.92Q50.50 30.33 50.29 31.04Q50.08 31.75 50.00 32.42Q49.92 33.08 49.71 33.71Q49.50 34.33 49.50 34.79Q49.50 35.25 49.71 35.54Q49.92 35.83 50.42 36.00Q50.92 36.17 52.96 36.17Q55.00 36.17 55.38 35.96Q55.75 35.75 56.04 34.79Q56.33 33.83 56.42 33.00Q56.50 32.17 56.96 30.33Q57.42 28.50 57.42 27.58Q57.42 26.67 57.67 26.04Q57.92 25.42 57.92 24.88Q57.92 24.33 58.17 23.38Q58.42 22.42 58.46 21.79Q58.50 21.17 58.75 20.17Q59.00 19.17 59.42 18.21Q59.83 17.25 60.79 16.21Q61.75 15.17 62.58 14.67Q63.42 14.17 63.88 14.12Q64.33 14.08 64.96 14.25Q65.58 14.42 65.88 14.42Q66.17 14.42 66.67 14.62Q67.17 14.83 67.67 14.75Q68.17 14.67 68.46 14.38Q68.75 14.08 69.46 12.92Q70.17 11.75 70.75 11.12Q71.33 10.50 71.42 10.21Q71.50 9.92 71.29 9.58zM178.25 10.08Q177.00 9.17 176.29 9.08Q175.58 9.00 174.96 8.75Q174.33 8.50 173.46 8.50Q172.58 8.50 172.17 8.38Q171.75 8.25 171.46 8.25Q171.17 8.25 170.17 8.54Q169.17 8.83 168.33 8.83Q167.50 8.83 166.88 9.25Q166.25 9.67 165.29 10.12Q164.33 10.58 163.75 11.21Q163.17 11.83 162.75 12.50Q162.33 13.17 161.96 14.62Q161.58 16.08 161.58 16.46Q161.58 16.83 161.79 17.96Q162.00 19.08 162.62 20.29Q163.25 21.50 163.88 22.12Q164.50 22.75 165.17 23.25Q165.83 23.75 166.67 24.12Q167.50 24.50 168.08 25.04Q168.67 25.58 169.46 25.92Q170.25 26.25 171.04 27.04Q171.83 27.83 172.04 28.33Q172.25 28.83 172.12 29.33Q172.00 29.83 171.54 30.33Q171.08 30.83 170.71 31.00Q170.33 31.17 169.25 31.29Q168.17 31.42 167.17 31.17Q166.17 30.92 165.71 30.62Q165.25 30.33 164.54 30.04Q163.83 29.75 163.33 29.38Q162.83 29.00 162.54 29.00Q162.25 29.00 161.71 29.58Q161.17 30.17 160.88 30.75Q160.58 31.33 160.17 31.75Q159.75 32.17 159.67 32.54Q159.58 32.92 159.71 33.21Q159.83 33.50 160.08 33.75Q160.33 34.00 160.92 34.25Q161.50 34.50 162.00 34.96Q162.50 35.42 163.46 35.67Q164.42 35.92 165.00 36.17Q165.58 36.42 167.50 36.42Q169.42 36.42 170.08 36.25Q170.75 36.08 171.67 36.08Q172.58 36.08 174.42 35.17Q176.25 34.25 177.21 33.04Q178.17 31.83 178.29 31.54Q178.42 31.25 178.46 30.71Q178.50 30.17 178.71 29.42Q178.92 28.67 178.92 27.92Q178.92 27.17 178.83 26.83Q178.75 26.50 178.42 25.92Q178.08 25.33 177.92 24.75Q177.75 24.17 176.92 23.17Q176.08 22.17 175.42 21.67Q174.75 21.17 174.21 20.92Q173.67 20.67 173.12 20.25Q172.58 19.83 171.67 19.29Q170.75 18.75 170.08 18.25Q169.42 17.75 168.83 17.12Q168.25 16.50 168.29 16.00Q168.33 15.50 168.50 15.08Q168.67 14.67 168.88 14.42Q169.08 14.17 170.25 13.79Q171.42 13.42 171.83 13.42Q172.25 13.42 174.21 14.33Q176.17 15.25 176.46 15.29Q176.75 15.33 177.00 15.21Q177.25 15.08 177.71 14.42Q178.17 13.75 178.83 13.08Q179.50 12.42 179.67 12.00Q179.83 11.58 179.67 11.29Q179.50 11.00 178.25 10.08zM106.62 9.42Q104.67 10.33 103.12 11.83Q101.58 13.33 100.88 14.25Q100.17 15.17 100.00 15.75Q99.83 16.33 99.42 17.08Q99.00 17.83 98.50 19.54Q98.00 21.25 98.00 23.46Q98.00 25.67 98.25 26.58Q98.50 27.50 98.50 28.38Q98.50 29.25 98.62 29.50Q98.75 29.75 99.25 30.29Q99.75 30.83 100.04 31.54Q100.33 32.25 100.92 33.00Q101.50 33.75 102.17 34.25Q102.83 34.75 103.67 35.25Q104.50 35.75 105.62 35.96Q106.75 36.17 107.42 36.42Q108.08 36.67 108.42 36.67Q108.75 36.67 109.67 36.50Q110.58 36.33 112.42 35.46Q114.25 34.58 115.25 33.46Q116.25 32.33 116.67 32.00Q117.08 31.67 117.29 31.62Q117.50 31.58 117.54 31.88Q117.58 32.17 117.42 32.62Q117.25 33.08 117.17 34.33Q117.08 35.58 117.25 35.79Q117.42 36.00 117.62 36.08Q117.83 36.17 119.92 36.17Q122.00 36.17 122.62 36.00Q123.25 35.83 123.50 35.46Q123.75 35.08 123.96 33.12Q124.17 31.17 124.46 30.21Q124.75 29.25 124.75 28.75Q124.75 28.25 124.92 27.50Q125.08 26.75 125.12 25.96Q125.17 25.17 125.54 23.92Q125.92 22.67 126.00 21.29Q126.08 19.92 126.42 19.04Q126.75 18.17 126.96 16.17Q127.17 14.17 127.46 13.21Q127.75 12.25 127.75 11.75Q127.75 11.25 127.88 10.79Q128.00 10.33 127.96 9.79Q127.92 9.25 127.75 9.08Q127.58 8.92 127.29 8.83Q127.00 8.75 124.96 8.75Q122.92 8.75 122.58 8.83Q122.25 8.92 122.04 9.04Q121.83 9.17 121.58 9.50Q121.33 9.83 121.21 11.04Q121.08 12.25 120.79 12.58Q120.50 12.92 120.17 12.67Q119.83 12.42 119.29 11.62Q118.75 10.83 118.42 10.50Q118.08 10.17 117.42 9.75Q116.75 9.33 116.17 9.08Q115.58 8.83 114.88 8.79Q114.17 8.75 113.25 8.46Q112.33 8.17 111.96 8.17Q111.58 8.17 110.96 8.33Q110.33 8.50 109.46 8.50Q108.58 8.50 106.62 9.42zM109.75 13.88Q110.67 13.42 112.00 13.42Q113.33 13.42 113.75 13.54Q114.17 13.67 114.79 13.71Q115.42 13.75 115.75 13.92Q116.08 14.08 117.25 15.25Q118.42 16.42 118.62 16.92Q118.83 17.42 119.00 18.33Q119.17 19.25 119.17 20.96Q119.17 22.67 119.00 23.42Q118.83 24.17 118.79 24.83Q118.75 25.50 117.75 27.00Q116.75 28.50 115.96 29.25Q115.17 30.00 114.71 30.33Q114.25 30.67 113.79 30.83Q113.33 31.00 112.38 31.08Q111.42 31.17 111.00 31.08Q110.58 31.00 109.92 31.00Q109.25 31.00 108.79 30.83Q108.33 30.67 107.54 30.08Q106.75 29.50 106.42 29.12Q106.08 28.75 105.71 28.00Q105.33 27.25 105.12 26.42Q104.92 25.58 104.83 23.92Q104.75 22.25 104.92 21.50Q105.08 20.75 105.12 20.08Q105.17 19.42 105.67 18.38Q106.17 17.33 106.50 16.83Q106.83 16.33 107.83 15.33Q108.83 14.33 109.75 13.88zM84.96 8.33Q84.33 8.17 83.71 8.21Q83.08 8.25 82.42 8.50Q81.75 8.75 81.04 8.79Q80.33 8.83 78.75 9.58Q77.17 10.33 76.29 10.92Q75.42 11.50 74.00 12.92Q72.58 14.33 71.83 15.75Q71.08 17.17 70.92 17.96Q70.75 18.75 70.46 19.58Q70.17 20.42 70.08 20.83Q70.00 21.25 70.00 22.38Q70.00 23.50 69.92 23.88Q69.83 24.25 69.92 25.50Q70.00 26.75 70.38 27.62Q70.75 28.50 70.83 29.08Q70.92 29.67 71.67 30.88Q72.42 32.08 73.17 32.83Q73.92 33.58 74.79 34.08Q75.67 34.58 76.46 34.92Q77.25 35.25 77.58 35.50Q77.92 35.75 79.00 35.88Q80.08 36.00 80.58 36.17Q81.08 36.33 81.67 36.38Q82.25 36.42 82.71 36.54Q83.17 36.67 84.29 36.54Q85.42 36.42 87.00 36.04Q88.58 35.67 90.33 34.71Q92.08 33.75 92.25 33.58Q92.42 33.42 92.54 33.12Q92.67 32.83 92.62 32.50Q92.58 32.17 92.38 31.83Q92.17 31.50 91.71 31.04Q91.25 30.58 90.92 29.96Q90.58 29.33 90.25 29.12Q89.92 28.92 89.58 28.92Q89.25 28.92 88.33 29.58Q87.42 30.25 86.46 30.71Q85.50 31.17 84.33 31.29Q83.17 31.42 82.67 31.25Q82.17 31.08 81.17 31.00Q80.17 30.92 79.92 30.79Q79.67 30.67 78.92 29.92Q78.17 29.17 77.67 28.38Q77.17 27.58 76.96 27.04Q76.75 26.50 76.67 25.50Q76.58 24.50 76.79 24.29Q77.00 24.08 77.25 24.00Q77.50 23.92 85.79 23.88Q94.08 23.83 94.42 23.58Q94.75 23.33 94.83 23.04Q94.92 22.75 94.92 21.54Q94.92 20.33 95.04 19.75Q95.17 19.17 94.96 17.33Q94.75 15.50 94.46 15.04Q94.17 14.58 93.88 13.88Q93.58 13.17 92.96 12.25Q92.33 11.33 91.79 10.83Q91.25 10.33 89.42 9.46Q87.58 8.58 86.58 8.54Q85.58 8.50 84.96 8.33zM77.46 18.79Q77.42 18.50 77.67 17.79Q77.92 17.08 78.54 16.25Q79.17 15.42 79.88 14.75Q80.58 14.08 81.71 13.58Q82.83 13.08 83.50 13.08Q84.17 13.08 85.38 13.33Q86.58 13.58 87.17 14.17Q87.75 14.75 88.29 15.67Q88.83 16.58 88.92 16.92Q89.00 17.25 88.96 18.00Q88.92 18.75 88.83 18.92Q88.75 19.08 88.46 19.29Q88.17 19.50 83.12 19.50Q78.08 19.50 77.79 19.29Q77.50 19.08 77.46 18.79zM16.00 3.46Q15.75 3.25 13.25 3.21Q10.75 3.17 10.50 3.25Q10.25 3.33 10.04 3.62Q9.83 3.92 9.79 4.33Q9.75 4.75 9.54 5.29Q9.33 5.83 9.21 6.83Q9.08 7.83 8.79 8.25Q8.50 8.67 8.29 8.75Q8.08 8.83 6.00 8.79Q3.92 8.75 3.62 8.83Q3.33 8.92 3.00 9.38Q2.67 9.83 2.42 10.71Q2.17 11.58 2.17 12.38Q2.17 13.17 2.29 13.38Q2.42 13.58 2.58 13.67Q2.75 13.75 4.83 13.71Q6.92 13.67 7.21 13.75Q7.50 13.83 7.71 14.12Q7.92 14.42 7.88 15.25Q7.83 16.08 7.50 16.92Q7.17 17.75 6.96 19.75Q6.75 21.75 6.46 22.71Q6.17 23.67 6.17 24.17Q6.17 24.67 6.00 25.42Q5.83 26.17 5.79 26.96Q5.75 27.75 5.46 28.71Q5.17 29.67 5.00 31.33Q4.83 33.00 4.50 33.83Q4.17 34.67 4.21 35.08Q4.25 35.50 4.46 35.75Q4.67 36.00 6.75 36.08Q8.83 36.17 9.42 36.12Q10.00 36.08 10.17 36.00Q10.33 35.92 10.54 35.62Q10.75 35.33 10.96 33.92Q11.17 32.50 11.46 31.83Q11.75 31.17 11.83 29.75Q11.92 28.33 12.29 27.08Q12.67 25.83 12.92 23.50Q13.17 21.17 13.42 20.46Q13.67 19.75 13.92 17.46Q14.17 15.17 14.33 14.79Q14.50 14.42 15.00 14.08Q15.50 13.75 18.38 13.75Q21.25 13.75 21.54 13.62Q21.83 13.50 22.12 13.04Q22.42 12.58 22.62 11.46Q22.83 10.33 22.83 9.83Q22.83 9.33 22.67 9.12Q22.50 8.92 22.29 8.83Q22.08 8.75 19.46 8.79Q16.83 8.83 16.54 8.75Q16.25 8.67 16.00 8.33Q15.75 8.00 15.75 7.62Q15.75 7.25 15.92 6.50Q16.08 5.75 16.17 4.71Q16.25 3.67 16.00 3.46zM160.42 2.08Q160.25 1.92 157.58 1.83Q154.92 1.75 154.54 1.96Q154.17 2.17 154.00 2.67Q153.83 3.17 153.79 3.96Q153.75 4.75 153.50 5.46Q153.25 6.17 153.00 8.29Q152.75 10.42 152.54 10.83Q152.33 11.25 152.21 12.00Q152.08 12.75 151.88 12.96Q151.67 13.17 151.38 13.04Q151.08 12.92 150.79 12.25Q150.50 11.58 149.79 10.88Q149.08 10.17 148.08 9.58Q147.08 9.00 145.71 8.58Q144.33 8.17 143.50 8.17Q142.67 8.17 141.96 8.33Q141.25 8.50 140.67 8.54Q140.08 8.58 139.12 8.83Q138.17 9.08 137.71 9.38Q137.25 9.67 136.46 10.00Q135.67 10.33 134.42 11.58Q133.17 12.83 132.21 14.12Q131.25 15.42 130.67 16.62Q130.08 17.83 130.00 18.46Q129.92 19.08 129.54 20.33Q129.17 21.58 129.17 23.42Q129.17 25.25 129.33 25.96Q129.50 26.67 129.50 27.08Q129.50 27.50 129.75 28.50Q130.00 29.50 130.67 30.88Q131.33 32.25 131.83 32.79Q132.33 33.33 132.92 33.75Q133.50 34.17 133.96 34.62Q134.42 35.08 135.12 35.46Q135.83 35.83 137.12 36.00Q138.42 36.17 139.00 36.42Q139.58 36.67 140.12 36.54Q140.67 36.42 141.50 36.42Q142.33 36.42 143.46 35.88Q144.58 35.33 146.42 33.42Q148.25 31.50 148.42 31.50Q148.58 31.50 148.71 31.71Q148.83 31.92 148.83 32.12Q148.83 32.33 148.54 33.25Q148.25 34.17 148.21 34.71Q148.17 35.25 148.42 35.62Q148.67 36.00 150.79 36.08Q152.92 36.17 153.46 36.12Q154.00 36.08 154.29 35.88Q154.58 35.67 154.75 35.21Q154.92 34.75 155.04 33.62Q155.17 32.50 155.46 31.83Q155.75 31.17 155.96 29.17Q156.17 27.17 156.46 26.21Q156.75 25.25 156.75 24.75Q156.75 24.25 156.92 23.50Q157.08 22.75 157.12 21.96Q157.17 21.17 157.42 20.50Q157.67 19.83 157.92 17.67Q158.17 15.50 158.46 14.83Q158.75 14.17 158.88 12.50Q159.00 10.83 159.33 9.79Q159.67 8.75 159.92 6.46Q160.17 4.17 160.42 3.50Q160.67 2.83 160.62 2.54Q160.58 2.25 160.42 2.08zM144.21 13.25Q144.67 13.25 145.08 13.46Q145.50 13.67 146.00 13.71Q146.50 13.75 147.00 13.96Q147.50 14.17 148.21 14.79Q148.92 15.42 149.42 16.29Q149.92 17.17 150.21 18.33Q150.50 19.50 150.50 20.92Q150.50 22.33 150.38 22.75Q150.25 23.17 150.21 23.83Q150.17 24.50 149.33 26.25Q148.50 28.00 148.29 28.29Q148.08 28.58 147.42 29.21Q146.75 29.83 145.75 30.38Q144.75 30.92 143.54 31.04Q142.33 31.17 141.38 31.00Q140.42 30.83 140.04 30.71Q139.67 30.58 139.04 30.17Q138.42 29.75 137.46 28.58Q136.50 27.42 136.42 26.75Q136.33 26.08 136.12 25.33Q135.92 24.58 135.92 23.46Q135.92 22.33 136.04 21.38Q136.17 20.42 136.46 19.88Q136.75 19.33 137.00 18.50Q137.25 17.67 137.92 16.67Q138.58 15.67 138.88 15.38Q139.17 15.08 140.79 14.29Q142.42 13.50 143.08 13.38Q143.75 13.25 144.21 13.25zM28.38 1.88Q27.83 2.00 27.50 2.29Q27.17 2.58 27.08 2.88Q27.00 3.17 26.92 4.58Q26.83 6.00 26.50 6.88Q26.17 7.75 25.96 9.75Q25.75 11.75 25.50 12.46Q25.25 13.17 25.00 15.46Q24.75 17.75 24.42 18.75Q24.08 19.75 23.96 21.38Q23.83 23.00 23.50 23.92Q23.17 24.83 22.96 26.79Q22.75 28.75 22.50 29.46Q22.25 30.17 22.21 30.92Q22.17 31.67 22.00 32.42Q21.83 33.17 21.71 34.33Q21.58 35.50 21.67 35.67Q21.75 35.83 21.96 35.96Q22.17 36.08 24.58 36.12Q27.00 36.17 27.38 35.96Q27.75 35.75 28.21 34.25Q28.67 32.75 28.92 30.46Q29.17 28.17 29.42 27.46Q29.67 26.75 29.88 24.83Q30.08 22.92 30.38 22.21Q30.67 21.50 30.92 19.96Q31.17 18.42 31.67 17.58Q32.17 16.75 32.88 16.04Q33.58 15.33 34.62 14.83Q35.67 14.33 36.58 14.12Q37.50 13.92 38.38 14.12Q39.25 14.33 40.00 14.88Q40.75 15.42 41.04 15.83Q41.33 16.25 41.58 17.46Q41.83 18.67 41.79 19.21Q41.75 19.75 41.46 20.71Q41.17 21.67 41.17 22.17Q41.17 22.67 41.00 23.42Q40.83 24.17 40.79 24.96Q40.75 25.75 40.46 26.71Q40.17 27.67 40.17 28.17Q40.17 28.67 40.00 29.42Q39.83 30.17 39.79 30.96Q39.75 31.75 39.38 32.96Q39.00 34.17 39.00 34.75Q39.00 35.33 39.21 35.67Q39.42 36.00 39.67 36.08Q39.92 36.17 41.96 36.17Q44.00 36.17 44.33 36.08Q44.67 36.00 45.08 35.62Q45.50 35.25 45.67 34.71Q45.83 34.17 45.96 32.54Q46.08 30.92 46.42 30.04Q46.75 29.17 46.96 27.17Q47.17 25.17 47.46 24.21Q47.75 23.25 47.75 22.75Q47.75 22.25 47.92 21.50Q48.08 20.75 48.12 19.96Q48.17 19.17 48.46 18.21Q48.75 17.25 48.83 16.25Q48.92 15.25 48.71 14.50Q48.50 13.75 48.46 13.21Q48.42 12.67 47.42 11.33Q46.42 10.00 45.58 9.54Q44.75 9.08 43.62 8.79Q42.50 8.50 40.96 8.50Q39.42 8.50 38.42 8.75Q37.42 9.00 37.04 9.17Q36.67 9.33 36.08 9.75Q35.50 10.17 34.08 11.54Q32.67 12.92 32.54 12.92Q32.42 12.92 32.29 12.75Q32.17 12.58 32.12 12.08Q32.08 11.58 32.38 10.67Q32.67 9.75 32.92 7.46Q33.17 5.17 33.50 4.21Q33.83 3.25 33.83 2.79Q33.83 2.33 33.67 2.12Q33.50 1.92 33.29 1.83Q33.08 1.75 31.00 1.75Q28.92 1.75 28.38 1.88z"/></symbol>
+ <symbol id="i-heart" viewBox="0 0 24 24"><path d="M12 21s-7.5-4.6-9.5-9.2C1.2 8.6 3 5 6.6 5c2 0 3.7 1.1 5.4 3 1.7-1.9 3.4-3 5.4-3 3.6 0 5.4 3.6 4.1 6.8C19.5 16.4 12 21 12 21z"/></symbol>
+ <symbol id="i-comment" viewBox="0 0 24 24"><path d="M5 16.9A8.2 8.2 0 1 1 7.3 19L3.7 20.2z"/></symbol>
+ <symbol id="i-repost" viewBox="0 0 24 24"><path d="M4.5 11.5V10a3.5 3.5 0 0 1 3.5-3.5h11M16 3.5l3 3-3 3M19.5 12.5V14a3.5 3.5 0 0 1-3.5 3.5H5M8 14.5l-3 3 3 3"/></symbol>
+ <symbol id="i-send" viewBox="0 0 24 24"><path d="M21.2 3.1 3.1 9.9l6.9 3.2 3.2 7.8zM10 13.1l11.2-10"/></symbol>
+</defs></svg>
+<div id="app">
+  <header class="head" id="head"><span class="hb wm"><svg class="wg" viewBox="0 0 43 48" aria-hidden="true"><use href="#i-glyph"/></svg><svg class="wt" viewBox="0 0 182 39" aria-hidden="true"><use href="#i-wordmark"/></svg></span></header>
+  <section class="view on" id="v-home"><div class="topbar"><button class="tb" id="menuBtn" aria-label="Menu"><svg viewBox="0 0 24 24"><path d="M4 9h16M4 15h16"/></svg></button><div class="logo"><span class="wm" role="img" aria-label="Threads"><svg class="wg" viewBox="0 0 43 48" aria-hidden="true"><use href="#i-glyph"/></svg><svg class="wt" viewBox="0 0 182 39" aria-hidden="true"><use href="#i-wordmark"/></svg></span></div><button class="tb" id="searchBtn" aria-label="Pesquisar"><svg viewBox="0 0 24 24"><circle cx="10.8" cy="10.8" r="7"/><path d="M16 16l5 5"/></svg></button></div>
+  <div class="composer" id="composer"><div class="av" style="background:#7c5cff">SP</div><div><b>seu.perfil</b><div class="ph">Quais são as novidades?</div></div></div>
+  <div id="feed"></div></section>
+
+  <section class="view" id="v-search">
+    <div class="sbar"><button class="back" id="sBack" aria-label="Voltar">‹</button><input id="sq" class="sin" placeholder="Pesquisar" autocomplete="off"></div>
+    <div id="sres"></div>
+  </section>
+
+  <section class="view" id="v-msg">
+    <h1>Mensagens</h1>
+    <div class="card"><b>Nenhuma mensagem ainda</b><p>Quando alguém te escrever, a conversa aparece aqui.</p></div>
+  </section>
+
+  <section class="view" id="v-new">
+    <h1>Nova thread</h1>
+    <textarea id="draft" placeholder="O que está rolando?" maxlength="500"></textarea>
+    <button class="btn" id="publish">Publicar</button>
+  </section>
+
+  <section class="view" id="v-act">
+    <h1>Atividade</h1>
+    <div class="post"><div class="av" style="background:#7c5cff">LA</div><div class="body"><div class="name">lara.dev<span>2 min</span></div><div class="txt">curtiu sua thread</div></div></div>
+    <div class="post"><div class="av" style="background:#e5484d">MK</div><div class="body"><div class="name">marcos.k<span>1 h</span></div><div class="txt">começou a seguir você</div></div></div>
+  </section>
+
+  <section class="view" id="v-me">
+    <div class="profile-head"><h1>seu.perfil</h1><button class="gear" id="openSet" aria-label="Configurações">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"><circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/></svg></button></div>
+    <div class="card"><b>Sua conta</b><p>Toque na engrenagem para ajustar o desfoque da barra.</p></div>
+    <div id="mine"></div>
+  </section>
+
+  <section class="view" id="v-set">
+    <h1>Configurações</h1>
+    <div class="card"><b>Desfoque da barra</b><p>Arraste para mudar o quanto o fundo fica borrado atrás da barra inferior.</p>
+      <div class="slider-wrap">
+      <!-- developed © Maxuiux -->
+      <div class="slider-container" id="slider"><div class="slider-progress" id="progress"></div>
+        <div class="slider-thumb-glass" id="thumb"><div class="slider-thumb-glass-filter"></div><div class="slider-thumb-glass-overlay"></div><div class="slider-thumb-glass-specular"></div></div></div>
+      </div>
+      <div class="val"><span>Nítido</span><b id="val">12 px</b><span>Muito borrado</span></div>
+    </div>
+    <div class="card"><b>Distorção da barra</b><p>Arraste para mudar a refração do vidro na barra e na pílula (50 é o padrão). Só aparece no Chrome e no Edge.</p>
+      <div class="slider-wrap">
+        <div class="slider-container" id="slider2"><div class="slider-progress" id="progress2"></div>
+          <div class="slider-thumb-glass" id="thumb2"><div class="slider-thumb-glass-filter"></div><div class="slider-thumb-glass-overlay"></div><div class="slider-thumb-glass-specular"></div></div></div>
+      </div>
+      <div class="val"><span>Reto</span><b id="val2">50</b><span>Muito curvo</span></div>
+    </div>
+    <div class="card"><b>Brilho da barra</b><p>Clareia ou escurece o vidro da barra inferior.</p>
+      <div class="slider-wrap"><div class="slider-container" id="slider3"><div class="slider-progress" id="progress3"></div>
+        <div class="slider-thumb-glass" id="thumb3"><div class="slider-thumb-glass-filter"></div><div class="slider-thumb-glass-overlay"></div><div class="slider-thumb-glass-specular"></div></div></div></div>
+      <div class="val"><span>Escuro</span><b id="val3">100%</b><span>Claro</span></div></div>
+    <div class="row" data-bounce="true"><span>Tema escuro</span><button class="liquid-toggle sm" id="tTheme" aria-label="Tema escuro"></button></div>
+    <div class="row lang-row" id="openLang"><span style="display:flex;align-items:center;gap:12px"><svg class="gl" viewBox="0 0 24 24"><use href="#i-globe"/></svg><span>Idioma</span></span><b class="cur" id="langCur">Português</b></div>
+    <div class="row"><span>Voltar ao perfil</span><button class="btn" id="back">Voltar</button></div>
+  </section>
+
+  <div id="lang" hidden><div class="lbg" id="lbg"></div><div class="lcard">
+    <svg class="lglobe" viewBox="0 0 24 24"><use href="#i-globe"/></svg>
+    <h2>Escolher idioma</h2><p class="ld">Escolha o idioma do app. A mudança vale na hora.</p>
+    <div class="llist" id="llist"></div>
+    <div class="lbtns"><button class="lb sec" id="lNot">Agora não</button><button class="lb pri" id="lSet">Definir</button></div>
+  </div></div>
+
+  <div id="drawer" hidden><div class="dbg" id="dbg"></div><div class="dpn">
+    <button id="dLang" style="display:flex;align-items:center;gap:12px"><svg class="gl" viewBox="0 0 24 24"><use href="#i-globe"/></svg>Idioma</button><button data-go="me">Perfil</button><button data-go="msg">Mensagens</button><button data-go="act">Atividade</button><button data-go="set">Configurações</button>
+  </div></div>
+
+  <nav class="nav" id="nav">
+    <div class="nav-glow"></div><i class="tab-indicator" id="ind"></i>
+    <button class="tab on" data-v="home" aria-label="Início"><svg class="fill" viewBox="0 0 24 24"><path d="M12 3.9c.45 0 .9.15 1.25.43l6 4.8c.5.4.75.98.75 1.6V17.5a2.6 2.6 0 0 1-2.6 2.6H6.6A2.6 2.6 0 0 1 4 17.5v-6.77c0-.62.25-1.2.75-1.6l6-4.8c.35-.28.8-.43 1.25-.43z"/></svg></button>
+    <button class="tab" data-v="msg" aria-label="Mensagens"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></button>
+    <button class="tab" data-v="new" aria-label="Nova thread"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></button>
+    <button class="tab" data-v="act" aria-label="Atividade"><svg class="fill" viewBox="0 0 24 24"><use href="#i-heart"/></svg><i class="dot" id="dot"></i></button>
+    <button class="tab" data-v="me" aria-label="Perfil"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="3.800"/><path d="M5 20.500c.6-3.700 3.300-5.600 7-5.600s6.400 1.900 7 5.600"/></svg></button>
+  </nav>
+</div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const store={get(k){try{return localStorage.getItem(k)}catch(e){return null}},set(k,v){try{localStorage.setItem(k,v)}catch(e){}}};
+const colors=['#7c5cff','#e5484d','#0f9d8a','#e08a00','#2f7de1'];
+let posts=[
+ {n:'lara.dev',t:'2 min',th:true,x:'Blur nenhum, blur demais… qual o seu ponto ideal na barra de baixo? 👀',l:24},
+ {n:'marcos.k',t:'18 min',x:'Liquid glass em tudo. Meu celular parece uma gota d’água e eu gosto.',l:112},
+ {n:'bia.design',t:'1 h',x:'Dica: se o texto atrás da barra ainda dá pra ler, aumenta o desfoque.',l:57},
+ {n:'caio.s',t:'3 h',x:'Café, fone e um app novo pra testar. Domingo perfeito.',l:9},
+ {n:'nina.codes',t:'5 h',x:'Terminei o protótipo hoje. Sempre falta um detalhe, mas ficou bom.',l:41},
+ {n:'rafa.t',t:'8 h',x:'Alguém mais acha que a barra flutuante ficou melhor que a fixa?',l:33}
+];
+const mine=[],fol={};
+const ico=id=>`<svg class="ic" viewBox="0 0 24 24"><use href="#${id}"/></svg>`;
+const VF='<svg class="vf" viewBox="0 0 24 24"><circle cx="12" cy="12" r="11" fill="#0095f6"/><path d="M7.2 12.6l3.1 3.1 6.5-6.6" fill="none" stroke="#fff" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+function card(p,i,own){const c=colors[(p.n.length+i)%5],v=!own&&(p.n.length+i)%2==0;
+ return `<div class="post${p.th?' th':''}"><div class="avw"><div class="av" style="background:${c}">${p.n.slice(0,2).toUpperCase()}</div>${own?'':'<i class="plus"><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></i>'}</div><div class="body"><div class="name">${p.n}${v?VF:''}<span>${p.t}</span><button class="more" aria-label="Mais">···</button></div><div class="txt"></div><div class="acts"><button data-like="${own?'m':'f'}${i}" class="${p.on?'liked':''}">${ico('i-heart')}<span>${p.l}</span></button><button>${ico('i-comment')}<span>${(p.l*7)%9+1}</span></button><button>${ico('i-repost')}<span>${p.l%4}</span></button><button>${ico('i-send')}<span>${(p.l*3)%11}</span></button></div></div></div>`}
+function esc(s){return s.replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]))}
+function render(){
+ $('#feed').innerHTML=[...mine,...posts].map((p,i)=>card(p,i,i<mine.length)).join('');
+ $('#mine').innerHTML=mine.map((p,i)=>card(p,i,true)).join('');
+ const all=[...mine,...posts];
+ $$('#feed .txt').forEach((e,i)=>e.innerHTML=esc(all[i].x));
+ $$('#mine .txt').forEach((e,i)=>e.innerHTML=esc(mine[i].x));
+ renderSearch();
+ applyLang();
+}
+document.addEventListener('click',e=>{const b=e.target.closest('[data-like]');if(!b)return;
+ const k=b.dataset.like,i=+k.slice(1),list=k[0]=='m'?mine:posts;const p=k[0]=='m'?mine[i]:(i>=mine.length?posts[i-mine.length]:null)||posts[i];
+ const q=k[0]=='m'?mine[i]:posts[i-(b.closest('#feed,#sres')?mine.length:0)];
+ q.on=!q.on;q.l+=q.on?1:-1;render()});
+function go(v){$$('.view').forEach(s=>s.classList.toggle('on',s.id=='v-'+v));
+ $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v==(v=='set'?'me':v=='search'?'home':v)));
+ if(v=='act')$('#dot').classList.add('hide');place(tabFor(v));sync();}
+const nav=$('#nav'),ind=$('#ind'),tabs=$$('.tab'),home=$('#v-home'),head=$('#head');let drag=false;
+const sync=()=>head.classList.toggle('show',home.classList.contains('on')&&home.scrollTop>30);
+home.addEventListener('scroll',sync,{passive:true});
+const tabFor=v=>tabs.find(t=>t.dataset.v==(v=='set'?'me':v=='search'?'home':v));
+const place=t=>{ind.style.left=t.offsetLeft+'px';ind.style.width=t.offsetWidth+'px'};
+function pos(e){const r=nav.getBoundingClientRect(),k=r.width/nav.offsetWidth;return{x:(e.clientX-r.left)/k-nav.clientLeft,y:(e.clientY-r.top)/k-nav.clientTop}}
+function move(e){const p=pos(e);nav.style.setProperty('--gx',p.x+'px');nav.style.setProperty('--gy',p.y+'px');
+ if(!drag)return;if(Math.abs(e.clientX-pressX)>6)ind.classList.add('sliding');const w=ind.offsetWidth,lo=tabs[0].offsetLeft,hi=tabs[tabs.length-1].offsetLeft+tabs[tabs.length-1].offsetWidth-w;
+ const l=Math.max(lo,Math.min(hi,p.x-w/2));ind.style.left=l+'px';queueGlass();const c=l+w/2,near=tabs.reduce((a,b)=>Math.abs(b.offsetLeft+b.offsetWidth/2-c)<Math.abs(a.offsetLeft+a.offsetWidth/2-c)?b:a);tabs.forEach(t=>t.classList.toggle('hot',t===near))}
+let pressT=0,relT=null,pressX=0;
+nav.addEventListener('pointerdown',e=>{pressT=performance.now();pressX=e.clientX;clearTimeout(relT);drag=true;nav.setPointerCapture(e.pointerId);nav.classList.add('engaged','dragging');ind.classList.add('interacting');nav.style.setProperty('--ga',.55);beginGlass();move(e)});
+nav.addEventListener('pointermove',move);
+function end(e){if(!drag)return;drag=false;const x=pos(e).x;
+ const t=tabs.reduce((a,b)=>Math.abs(b.offsetLeft+b.offsetWidth/2-x)<Math.abs(a.offsetLeft+a.offsetWidth/2-x)?b:a);
+ nav.classList.remove('engaged','dragging');tabs.forEach(t=>t.classList.remove('hot'));ind.classList.remove('sliding');const hold=Math.max(0,280-(performance.now()-pressT));relT=setTimeout(()=>ind.classList.remove('interacting'),hold);nav.style.setProperty('--ga',0);endGlass(hold);go(t.dataset.v)}
+nav.addEventListener('pointerup',end);nav.addEventListener('pointercancel',end);
+tabs.forEach(t=>t.onclick=e=>{if(e.detail===0)go(t.dataset.v)});
+addEventListener('resize',()=>place(nav.querySelector('.tab.on')));
+requestAnimationFrame(()=>place(tabFor('home')));
+$('#openSet').onclick=()=>go('set');
+function renderSearch0(){const q=($('#sq').value||'').trim().toLowerCase(),all=[...mine,...posts];
+ if(!q){const names=[...new Set(all.map(p=>p.n))].filter(n=>n!=='seu.perfil');
+  $('#sres').innerHTML='<div class="card"><b>Sugestões para seguir</b></div>'+names.map((n,i)=>`<div class="row"><div style="display:flex;gap:12px;align-items:center"><div class="av" style="background:${colors[(n.length+i)%5]}">${n.slice(0,2).toUpperCase()}</div><b>${esc(n)}</b></div><button class="btn sm${fol[n]?' on':''}" data-fol="${esc(n)}">${fol[n]?'Seguindo':'Seguir'}</button></div>`).join('');return}
+ const idx=all.map((p,i)=>i).filter(i=>all[i].n.toLowerCase().includes(q)||all[i].x.toLowerCase().includes(q));
+ $('#sres').innerHTML=idx.length?idx.map(i=>card(all[i],i,i<mine.length)).join(''):`<p class="card" style="color:var(--mute)">${t('Nenhum resultado para')} “${esc(q)}”.</p>`;
+ $$('#sres .txt').forEach((e,k)=>e.innerHTML=esc(all[idx[k]].x))}
+const closeDrawer=()=>{$('#drawer').hidden=true};
+$('#menuBtn').onclick=()=>{$('#drawer').hidden=false};$('#dbg').onclick=closeDrawer;
+$$('#drawer [data-go]').forEach(b=>b.onclick=()=>{closeDrawer();go(b.dataset.go)});
+$('#searchBtn').onclick=()=>{go('search');setTimeout(()=>$('#sq').focus(),60)};
+$('#sBack').onclick=()=>{$('#sq').value='';renderSearch();go('home')};
+$('#sq').addEventListener('input',renderSearch);
+document.addEventListener('click',e=>{const f=e.target.closest('[data-fol]');if(f){fol[f.dataset.fol]=!fol[f.dataset.fol];renderSearch()}});
+$('#composer').onclick=()=>go('new');$('#back').onclick=()=>go('me');
+$('#publish').onclick=()=>{const v=$('#draft').value.trim();if(!v)return;mine.unshift({n:'seu.perfil',t:'agora',x:v,l:0});$('#draft').value='';render();go('home')};
+
+/* ===== Vidro líquido da barra: refração (Snell) + brilho, com a config DEFAULT_CONFIG ===== */
+/* ===== Vidro líquido: port da biblioteca lg_demo (refração + brilho) ===== */
+const DEFAULT_CONFIG={glassThickness:80,bezelWidth:40,ior:1.4,scaleRatio:1.0,blur:1,specularOpacity:.6,specularSat:0,tintColor:'255,255,255',tintOpacity:0,innerShadow:'rgba(255,255,255,0)',innerShadowBlur:0,innerShadowSpread:0,balancedSpecular:false};
+const DEFAULT_SWITCHER_CONFIG={glassThickness:30,bezelWidth:40,ior:1.4,scaleRatio:1.0,blur:0,specularOpacity:.5,specularSat:0,tintColor:'255,255,255',tintOpacity:0,innerShadow:'rgba(255,255,255,0)',innerShadowBlur:0,innerShadowSpread:0,balancedSpecular:true};
+let config=JSON.parse(JSON.stringify(DEFAULT_CONFIG)),switcherConfig=JSON.parse(JSON.stringify(DEFAULT_SWITCHER_CONFIG));
+const clamp=(n,a,b)=>Math.min(b,Math.max(a,n));
+const lgTargets=new Map();let lgDefs=null,navFilter=null;
+function surfaceFn(x){return Math.pow(1-Math.pow(1-x,4),.25)}
+function calcRefractionProfile(glassThickness,bezelWidth,ior,samples){samples=samples||128;const eta=1/ior;
+ function refract(nx,ny){const dot=ny,k=1-eta*eta*(1-dot*dot);if(k<0)return null;const sq=Math.sqrt(k);return[-(eta*dot+sq)*nx,eta-(eta*dot+sq)*ny]}
+ const p=new Float64Array(samples);
+ for(let i=0;i<samples;i++){const x=i/samples,y=surfaceFn(x),dx=x<1?.0001:-.0001,y2=surfaceFn(x+dx),deriv=(y2-y)/dx,mag=Math.sqrt(deriv*deriv+1),ref=refract(-deriv/mag,-1/mag);p[i]=ref?ref[0]*((y*bezelWidth+glassThickness)/ref[1]):0}
+ return p}
+function generateDisplacementMap(w,h,radius,bezelWidth,profile,maxDisp){const c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d'),img=ctx.createImageData(w,h),d=img.data;
+ for(let i=0;i<d.length;i+=4){d[i]=128;d[i+1]=128;d[i+2]=0;d[i+3]=255}
+ const r=radius,rSq=r*r,r1Sq=(r+1)**2,rBSq=Math.max(r-bezelWidth,0)**2,wB=w-r*2,hB=h-r*2,S=profile.length;
+ for(let y1=0;y1<h;y1++)for(let x1=0;x1<w;x1++){const x=x1<r?x1-r:x1>=w-r?x1-r-wB:0,y=y1<r?y1-r:y1>=h-r?y1-r-hB:0,dSq=x*x+y*y;
+  if(dSq>r1Sq||dSq<rBSq)continue;const dist=Math.sqrt(dSq),fromSide=r-dist,op=dSq<rSq?1:1-(dist-Math.sqrt(rSq))/(Math.sqrt(r1Sq)-Math.sqrt(rSq));if(op<=0||dist===0)continue;
+  const cos=x/dist,sin=y/dist,bi=Math.min(((fromSide/bezelWidth)*S)|0,S-1),disp=profile[bi]||0,dX=(-cos*disp)/maxDisp,dY=(-sin*disp)/maxDisp,idx=(y1*w+x1)*4;
+  d[idx]=(128+dX*127*op+.5)|0;d[idx+1]=(128+dY*127*op+.5)|0}
+ ctx.putImageData(img,0,0);return c.toDataURL()}
+function generateSpecularMap(w,h,radius,bezelWidth,balanced){const angle=Math.PI/3,c=document.createElement('canvas');c.width=w;c.height=h;const ctx=c.getContext('2d'),img=ctx.createImageData(w,h),d=img.data;d.fill(0);
+ const r=radius,rSq=r*r,r1Sq=(r+1)**2,rBSq=Math.max(r-bezelWidth,0)**2,wB=w-r*2,hB=h-r*2,sv=[Math.cos(angle),Math.sin(angle)];
+ for(let y1=0;y1<h;y1++)for(let x1=0;x1<w;x1++){const x=x1<r?x1-r:x1>=w-r?x1-r-wB:0,y=y1<r?y1-r:y1>=h-r?y1-r-hB:0,dSq=x*x+y*y;
+  if(dSq>r1Sq||dSq<rBSq)continue;const dist=Math.sqrt(dSq),fromSide=r-dist,op=dSq<rSq?1:1-(dist-Math.sqrt(rSq))/(Math.sqrt(r1Sq)-Math.sqrt(rSq));if(op<=0||dist===0)continue;
+  const cos=x/dist,sin=-y/dist,dot=balanced?1:Math.abs(cos*sv[0]+sin*sv[1]),edge=Math.sqrt(Math.max(0,1-(1-fromSide)**2)),coeff=dot*edge,col=(255*coeff)|0,alpha=(col*coeff*op)|0,idx=(y1*w+x1)*4;
+  d[idx]=col;d[idx+1]=col;d[idx+2]=col;d[idx+3]=alpha}
+ ctx.putImageData(img,0,0);return c.toDataURL()}
+function svgEl(tag,attrs){const el=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const[k,v]of Object.entries(attrs))el.setAttribute(k,v);return el}
+function ensureDefs(){const old=document.getElementById('demo-lg-defs');if(old&&document.documentElement.contains(old)){lgDefs=old;return}
+ const svg=document.createElementNS('http://www.w3.org/2000/svg','svg');svg.setAttribute('width','0');svg.setAttribute('height','0');svg.style.cssText='position:fixed;top:0;left:0;width:0;height:0;pointer-events:none;z-index:-1;';
+ lgDefs=document.createElementNS('http://www.w3.org/2000/svg','defs');lgDefs.id='demo-lg-defs';svg.appendChild(lgDefs);document.documentElement.appendChild(svg)}
+function buildFilter(id,w,h,radius,cfg){const bezel=Math.min(cfg.bezelWidth,radius-1,Math.min(w,h)/2-1),profile=calcRefractionProfile(cfg.glassThickness,bezel,cfg.ior,128),maxDisp=Math.max(...Array.from(profile).map(Math.abs))||1,
+  dispUrl=generateDisplacementMap(w,h,radius,bezel,profile,maxDisp),specUrl=generateSpecularMap(w,h,radius,bezel*2.5,!!cfg.balancedSpecular),scale=maxDisp*cfg.scaleRatio,pad=cfg.balancedSpecular?.36:0,
+  fx=Math.round(-w*pad),fy=Math.round(-h*pad),fw=Math.round(w*(1+pad*2)),fh=Math.round(h*(1+pad*2));
+ const filter=svgEl('filter',{id,x:String(fx),y:String(fy),width:String(fw),height:String(fh),filterUnits:'userSpaceOnUse',primitiveUnits:'userSpaceOnUse','color-interpolation-filters':'sRGB'});
+ const blur=svgEl('feGaussianBlur',{in:'SourceGraphic',stdDeviation:cfg.blur,result:'blurred'}),dispImg=svgEl('feImage',{href:dispUrl,x:0,y:0,width:w,height:h,result:'disp_map'}),
+  dispMap=svgEl('feDisplacementMap',{in:'blurred',in2:'disp_map',scale,xChannelSelector:'R',yChannelSelector:'G',result:'displaced'}),
+  disp=cfg.dispersion||0,
+  sat=svgEl('feColorMatrix',{in:'displaced',type:'saturate',values:cfg.specularSat,result:'displaced_sat'}),spec=svgEl('feImage',{href:specUrl,x:0,y:0,width:w,height:h,result:'spec_layer'}),
+  comp=svgEl('feComposite',{in:'displaced_sat',in2:'spec_layer',operator:'in',result:'spec_masked'}),tr=svgEl('feComponentTransfer',{in:'spec_layer',result:'spec_faded'});
+ tr.appendChild(svgEl('feFuncA',{type:'linear',slope:cfg.specularOpacity}));
+ const b1=svgEl('feBlend',{in:'spec_masked',in2:'displaced',mode:'normal',result:'with_sat'}),b2=svgEl('feBlend',{in:'spec_faded',in2:'with_sat',mode:'normal'});
+ if(disp>0){/* dispersão: canais deslocados em quantidades diferentes (franjas amareladas e arroxeadas) */
+  const ch=(k,sc,m)=>[svgEl('feDisplacementMap',{in:'blurred',in2:'disp_map',scale:sc,xChannelSelector:'R',yChannelSelector:'G',result:'d'+k}),svgEl('feColorMatrix',{in:'d'+k,type:'matrix',values:m,result:'c'+k})];
+  const R=ch('r',scale,'1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'),G=ch('g',scale*(1+disp*.25),'0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0'),B=ch('b',scale*(1+disp),'0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0');
+  const x1=svgEl('feBlend',{in:'cr',in2:'cg',mode:'screen',result:'crg'}),x2=svgEl('feBlend',{in:'crg',in2:'cb',mode:'screen',result:'displaced'});
+  filter.append(blur,dispImg,...R,...G,...B,x1,x2,sat,spec,comp,tr,b1,b2);return filter}
+ filter.append(blur,dispImg,dispMap,sat,spec,comp,tr,b1,b2);return filter}
+function applyGlass(el,cfgGetter){if(lgTargets.has(el))return;if(getComputedStyle(el).position==='static')el.style.position='relative';
+ const refr=document.createElement('div');refr.className='lg-layer';refr.style.cssText='position:absolute;inset:0;z-index:0;pointer-events:none;';
+ const tint=document.createElement('div');tint.className='lg-layer';tint.style.cssText='position:absolute;inset:0;z-index:0;pointer-events:none;';
+ el.insertBefore(tint,el.firstChild);el.insertBefore(refr,el.firstChild);let filterNode=null,timer=null;
+ function rebuild(){ensureDefs();const rect=el.getBoundingClientRect(),w=Math.round(el.offsetWidth||rect.width),h=Math.round(el.offsetHeight||rect.height);if(w<4||h<4)return;
+  const cssR=parseFloat(getComputedStyle(el).borderTopLeftRadius||'0'),r=Math.max(2,Math.min(cssR||24,w/2,h/2));if(filterNode)filterNode.remove();
+  const cfg=cfgGetter(),id='demo-lg-'+Math.random().toString(36).slice(2,10);filterNode=buildFilter(id,w,h,r,cfg);lgDefs.appendChild(filterNode);
+  refr.style.borderRadius=r+'px';refr.style.backdropFilter='url(#'+id+')';refr.style.webkitBackdropFilter='url(#'+id+')';
+  tint.style.borderRadius=r+'px';tint.style.backgroundColor='rgba('+cfg.tintColor+','+cfg.tintOpacity+')';tint.style.boxShadow='inset 0 0 '+cfg.innerShadowBlur+'px '+cfg.innerShadowSpread+'px '+cfg.innerShadow}
+ const ro=new ResizeObserver(()=>{clearTimeout(timer);timer=setTimeout(rebuild,16)});ro.observe(el);
+ lgTargets.set(el,{rebuild,destroy(){clearTimeout(timer);ro.disconnect();if(filterNode)filterNode.remove();refr.remove();tint.remove()}});rebuild()}
+function removeGlass(el){const i=lgTargets.get(el);if(!i)return;i.destroy();lgTargets.delete(el)}
+function enableGlass(el,g){if(!lgTargets.has(el))applyGlass(el,g);else lgTargets.get(el).rebuild()}
+function rebuildAll(){lgTargets.forEach(i=>i.rebuild());buildNavGlass()}
+/* vidro da barra inferior: mesmo filtro, aplicado direto na barra (config padrão) */
+function buildNavGlass(){if(!chromium)return;const w=nav.offsetWidth,h=nav.offsetHeight;if(w<4||h<4)return;ensureDefs();
+ const r=Math.min(h/2,w/2),id='demo-lg-nav-'+Math.random().toString(36).slice(2,8),f=buildFilter(id,w,h,r,config);if(navFilter)navFilter.remove();navFilter=f;lgDefs.appendChild(f);
+ const v='blur(var(--blur)) url(#'+id+') saturate(1.7) brightness(var(--bright,1))';nav.style.backdropFilter=v;nav.style.webkitBackdropFilter=v}
+let navReady=false,glassEndTimer=null,glassQ=false;
+function queueGlass(){if(glassQ)return;glassQ=true;requestAnimationFrame(()=>{glassQ=false;const i=lgTargets.get(ind);if(i)i.rebuild()})}
+function beginGlass(){clearTimeout(glassEndTimer);if(!chromium)return;enableGlass(ind,()=>({...switcherConfig,balancedSpecular:true}));queueGlass()}
+function endGlass(d){clearTimeout(glassEndTimer);glassEndTimer=setTimeout(()=>removeGlass(ind),500+(d||0))}
+
+/* Sliders de vidro: desfoque e distorção */
+function glassSlider(sfx,max,unit,def,key,apply){
+ const sl=$('#slider'+sfx),th=$('#thumb'+sfx),pr=$('#progress'+sfx),lab=$('#val'+sfx);
+ function set(v,save){v=Math.round(Math.max(0,Math.min(max,v)));apply(v);const p=v/max*100;pr.style.width=p+'%';th.style.left=p+'%';lab.textContent=v+unit;if(save)store.set(key,v)}
+ const from=e=>{const r=sl.getBoundingClientRect();set((e.clientX-r.left)/r.width*max,true)};
+ let tm=null,tc=null,pt=0,x0=0,q=false;const cfgG=()=>({...switcherConfig,balancedSpecular:true,dispersion:1.1});
+ sl.addEventListener('pointerdown',e=>{sl.setPointerCapture(e.pointerId);pt=performance.now();x0=e.clientX;clearTimeout(tc);th.classList.add('active');clearTimeout(tm);if(chromium)enableGlass(th,cfgG);from(e)});
+ sl.addEventListener('pointermove',e=>{if(sl.hasPointerCapture(e.pointerId)){if(Math.abs(e.clientX-x0)>4)th.classList.add('sliding');from(e);if(!q&&lgTargets.has(th)){q=true;requestAnimationFrame(()=>{q=false;const i=lgTargets.get(th);if(i)i.rebuild()})}}});
+ ['pointerup','pointercancel'].forEach(t=>sl.addEventListener(t,()=>{th.classList.remove('sliding');const d=Math.max(0,280-(performance.now()-pt));tc=setTimeout(()=>th.classList.remove('active'),d);clearTimeout(tm);tm=setTimeout(()=>removeGlass(th),500+d)}));
+ const saved=store.get(key);set(saved!==null?+saved:def,false)}
+glassSlider('',40,' px',12,'tg-blur',v=>document.documentElement.style.setProperty('--blur',v+'px'));
+glassSlider('3',160,'%',100,'tg-bright',v=>document.documentElement.style.setProperty('--bright',v/100));
+glassSlider('2',120,'',50,'tg-dist',v=>{config.scaleRatio=v/50;switcherConfig.scaleRatio=v/50;if(typeof navReady!=='undefined'&&navReady)rebuildAll()});
+
+/* Lente da barra: mapa de deslocamento nas bordas da pílula (Chrome/Edge) */
+const chromium=/Chrome|Edg/.test(navigator.userAgent)&&!/iPhone|iPad|CriOS/.test(navigator.userAgent);
+if(chromium)document.documentElement.classList.add('chromium');
+if(chromium){requestAnimationFrame(()=>{navReady=true;buildNavGlass()});new ResizeObserver(()=>{if(navReady)buildNavGlass()}).observe(nav)}
+
+const st=store.get('tg-theme');if(st)document.documentElement.dataset.theme=st;
+const TG='<div class="knockout"><div class="indicator indicator--masked"><div class="mask"></div></div></div><div class="indicator__liquid"><div class="wrapper"><div class="liquids"><div class="liquid__shadow"></div><div class="liquid__track"></div></div></div><div class="cover"></div><div class="shadow"></div></div>';
+function mkToggle(el,on,cb){el.innerHTML=TG;el.dataset.mapped='false';el.dataset.active='false';el.dataset.pressed='false';el.setAttribute('role','switch');el.style.touchAction='none';
+ let v=!!on,cur=v?100:0,down=false,moved=false,x0=0,lx=0;
+ const setC=c=>{cur=c;el.style.setProperty('--complete',c)};
+ const set=x=>{v=x;el.setAttribute('aria-pressed',x);setC(x?100:0);el.style.setProperty('--delta',0);cb(x)};
+ set(v);
+ el.addEventListener('pointerdown',e=>{down=true;moved=false;x0=lx=e.clientX;el.setPointerCapture(e.pointerId);el.dataset.active='true';el.dataset.pressed='true'});
+ el.addEventListener('pointermove',e=>{if(!down)return;if(Math.abs(e.clientX-x0)>4)moved=true;if(!moved)return;const r=el.getBoundingClientRect();setC(clamp(((e.clientX-r.left)-r.width*.3)/(r.width*.4)*100,0,100));el.style.setProperty('--delta',clamp(e.clientX-lx,-20,20));lx=e.clientX});
+ const up=()=>{if(!down)return;down=false;el.dataset.active='false';el.dataset.pressed='false';set(moved?cur>50:!v)};
+ el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);
+ el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();set(!v)}})}
+const dark=()=>(document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'))=='dark';
+mkToggle($('#tTheme'),dark(),v=>{document.documentElement.dataset.theme=v?'dark':'light';store.set('tg-theme',v?'dark':'light')});
+/* ===== Idioma (tradução da interface) ===== */
+const I18N={"Quais são as novidades?": {"en": "What's new?", "es": "¿Qué hay de nuevo?", "fr": "Quoi de neuf ?"}, "Mensagens": {"en": "Messages", "es": "Mensajes", "fr": "Messages"}, "Nenhuma mensagem ainda": {"en": "No messages yet", "es": "Aún no hay mensajes", "fr": "Aucun message pour l'instant"}, "Quando alguém te escrever, a conversa aparece aqui.": {"en": "When someone writes to you, the conversation shows up here.", "es": "Cuando alguien te escriba, la conversación aparecerá aquí.", "fr": "Quand quelqu'un t'écrit, la conversation apparaît ici."}, "Nova thread": {"en": "New thread", "es": "Nuevo hilo", "fr": "Nouveau fil"}, "Publicar": {"en": "Post", "es": "Publicar", "fr": "Publier"}, "Atividade": {"en": "Activity", "es": "Actividad", "fr": "Activité"}, "curtiu sua thread": {"en": "liked your thread", "es": "le gustó tu hilo", "fr": "a aimé ton fil"}, "começou a seguir você": {"en": "started following you", "es": "empezó a seguirte", "fr": "a commencé à te suivre"}, "Sua conta": {"en": "Your account", "es": "Tu cuenta", "fr": "Ton compte"}, "Toque na engrenagem para ajustar o desfoque da barra.": {"en": "Tap the gear to adjust the bar blur.", "es": "Toca el engranaje para ajustar el desenfoque de la barra.", "fr": "Touche l'engrenage pour régler le flou de la barre."}, "Configurações": {"en": "Settings", "es": "Ajustes", "fr": "Réglages"}, "Desfoque da barra": {"en": "Bar blur", "es": "Desenfoque de la barra", "fr": "Flou de la barre"}, "Arraste para mudar o quanto o fundo fica borrado atrás da barra inferior.": {"en": "Drag to change how blurred the background is behind the bottom bar.", "es": "Arrastra para cambiar cuánto se desenfoca el fondo detrás de la barra inferior.", "fr": "Fais glisser pour changer le flou de l'arrière-plan derrière la barre du bas."}, "Nítido": {"en": "Sharp", "es": "Nítido", "fr": "Net"}, "Muito borrado": {"en": "Very blurred", "es": "Muy borroso", "fr": "Très flou"}, "Distorção da barra": {"en": "Bar distortion", "es": "Distorsión de la barra", "fr": "Distorsion de la barre"}, "Arraste para mudar a refração do vidro na barra e na pílula (50 é o padrão). Só aparece no Chrome e no Edge.": {"en": "Drag to change the glass refraction on the bar and the pill (50 is the default). Only shows in Chrome and Edge.", "es": "Arrastra para cambiar la refracción del vidrio en la barra y la píldora (50 es el valor por defecto). Solo se ve en Chrome y Edge.", "fr": "Fais glisser pour changer la réfraction du verre sur la barre et la pilule (50 par défaut). Visible seulement dans Chrome et Edge."}, "Reto": {"en": "Flat", "es": "Recto", "fr": "Droit"}, "Muito curvo": {"en": "Very curved", "es": "Muy curvo", "fr": "Très courbe"}, "Brilho da barra": {"en": "Bar brightness", "es": "Brillo de la barra", "fr": "Luminosité de la barre"}, "Clareia ou escurece o vidro da barra inferior.": {"en": "Lightens or darkens the glass of the bottom bar.", "es": "Aclara u oscurece el vidrio de la barra inferior.", "fr": "Éclaircit ou assombrit le verre de la barre du bas."}, "Escuro": {"en": "Dark", "es": "Oscuro", "fr": "Sombre"}, "Claro": {"en": "Light", "es": "Claro", "fr": "Clair"}, "Tema escuro": {"en": "Dark theme", "es": "Tema oscuro", "fr": "Thème sombre"}, "Voltar ao perfil": {"en": "Back to profile", "es": "Volver al perfil", "fr": "Retour au profil"}, "Voltar": {"en": "Back", "es": "Volver", "fr": "Retour"}, "Perfil": {"en": "Profile", "es": "Perfil", "fr": "Profil"}, "Pesquisar": {"en": "Search", "es": "Buscar", "fr": "Rechercher"}, "O que está rolando?": {"en": "What's happening?", "es": "¿Qué está pasando?", "fr": "Quoi de neuf ?"}, "Sugestões para seguir": {"en": "Suggestions to follow", "es": "Sugerencias para seguir", "fr": "Suggestions à suivre"}, "Seguir": {"en": "Follow", "es": "Seguir", "fr": "Suivre"}, "Seguindo": {"en": "Following", "es": "Siguiendo", "fr": "Suivi"}, "Nenhum resultado para": {"en": "No results for", "es": "Sin resultados para", "fr": "Aucun résultat pour"}, "agora": {"en": "now", "es": "ahora", "fr": "maintenant"}, "Idioma": {"en": "Language", "es": "Idioma", "fr": "Langue"}, "Escolher idioma": {"en": "Choose language", "es": "Elegir idioma", "fr": "Choisir la langue"}, "Escolha o idioma do app. A mudança vale na hora.": {"en": "Choose the app language. The change applies right away.", "es": "Elige el idioma de la app. El cambio se aplica al instante.", "fr": "Choisis la langue de l'app. Le changement s'applique tout de suite."}, "Agora não": {"en": "Not Now", "es": "Ahora no", "fr": "Pas maintenant"}, "Definir": {"en": "Set", "es": "Establecer", "fr": "Définir"}, "Blur nenhum, blur demais… qual o seu ponto ideal na barra de baixo? 👀": {"en": "No blur, way too much blur… what's your sweet spot on the bottom bar? 👀", "es": "Nada de desenfoque, demasiado desenfoque… ¿cuál es tu punto ideal en la barra de abajo? 👀", "fr": "Aucun flou, trop de flou… quel est ton réglage idéal sur la barre du bas ? 👀"}, "Liquid glass em tudo. Meu celular parece uma gota d’água e eu gosto.": {"en": "Liquid glass on everything. My phone looks like a water drop and I like it.", "es": "Liquid glass en todo. Mi móvil parece una gota de agua y me gusta.", "fr": "Liquid glass partout. Mon téléphone ressemble à une goutte d'eau et j'aime ça."}, "Dica: se o texto atrás da barra ainda dá pra ler, aumenta o desfoque.": {"en": "Tip: if you can still read the text behind the bar, increase the blur.", "es": "Consejo: si aún se puede leer el texto detrás de la barra, sube el desenfoque.", "fr": "Astuce : si tu peux encore lire le texte derrière la barre, augmente le flou."}, "Café, fone e um app novo pra testar. Domingo perfeito.": {"en": "Coffee, headphones and a new app to test. Perfect Sunday.", "es": "Café, auriculares y una app nueva para probar. Domingo perfecto.", "fr": "Café, casque et une nouvelle app à tester. Dimanche parfait."}, "Terminei o protótipo hoje. Sempre falta um detalhe, mas ficou bom.": {"en": "Finished the prototype today. There's always one detail missing, but it turned out good.", "es": "Terminé el prototipo hoy. Siempre falta un detalle, pero quedó bien.", "fr": "J'ai fini le prototype aujourd'hui. Il manque toujours un détail, mais c'est bien."}, "Alguém mais acha que a barra flutuante ficou melhor que a fixa?": {"en": "Anyone else think the floating bar turned out better than the fixed one?", "es": "¿Alguien más cree que la barra flotante quedó mejor que la fija?", "fr": "Quelqu'un d'autre trouve que la barre flottante est mieux que la fixe ?"}};
+const LANGS=[['pt','Português'],['en','English'],['es','Español'],['fr','Français']];
+let lang=store.get('tg-lang')||'pt',pend=lang;
+if(!LANGS.some(l=>l[0]===lang))lang='pt';
+const t=k=>(lang!=='pt'&&I18N[k]&&I18N[k][lang])||k;
+function applyLang(root){
+ const w=document.createTreeWalker(root||$('#app'),NodeFilter.SHOW_TEXT,{acceptNode:n=>/^(SCRIPT|STYLE|TEXTAREA)$/.test(n.parentNode.nodeName)?NodeFilter.FILTER_REJECT:NodeFilter.FILTER_ACCEPT});
+ let n;while(n=w.nextNode()){if(n.__pt===undefined)n.__pt=n.nodeValue;const k=n.__pt.trim(),tr=I18N[k];if(!tr)continue;const v=lang==='pt'?k:(tr[lang]||k);n.nodeValue=n.__pt.replace(k,()=>v)}
+ $$('[placeholder]').forEach(e=>{if(e.__ph===undefined)e.__ph=e.getAttribute('placeholder');const tr=I18N[e.__ph];e.setAttribute('placeholder',lang==='pt'||!tr?e.__ph:(tr[lang]||e.__ph))});
+ document.documentElement.lang={pt:'pt-BR',en:'en',es:'es',fr:'fr'}[lang];
+ const cur=$('#langCur');if(cur)cur.textContent=LANGS.find(l=>l[0]===lang)[1]}
+function renderSearch(){renderSearch0();applyLang($('#sres'))}
+function setLang(l){lang=l;store.set('tg-lang',l);render()}
+function renderLangs(){$('#llist').innerHTML=LANGS.map(([c,n])=>`<button class="lrow${c===pend?' on':''}" data-lg="${c}"><span>${n}</span><i class="lck"></i></button>`).join('')}
+function openLang(){pend=lang;renderLangs();$('#lang').hidden=false}
+const closeLang=()=>{$('#lang').hidden=true};
+$('#openLang').onclick=openLang;$('#dLang').onclick=()=>{closeDrawer();openLang()};
+$('#llist').addEventListener('click',e=>{const b=e.target.closest('[data-lg]');if(!b)return;pend=b.dataset.lg;renderLangs()});
+$('#lNot').onclick=closeLang;$('#lbg').onclick=closeLang;
+$('#lSet').onclick=()=>{setLang(pend);closeLang()};
+render();
+</script>
+</body>
+</html>
+
+</body></html>
