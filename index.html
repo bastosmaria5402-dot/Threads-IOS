@@ -1,14 +1,15 @@
-<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
-<!DOCTYPE html>
+```html
+<!doctype html>
 <html lang="pt-BR">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Threads Glass</title>
 <style>
-:root{--bg:#0d0d0d;--fg:#f5f5f5;--mute:#8a8a8e;--line:#262628;--glass:rgba(255,255,255,.09);--pill:rgba(255,255,255,.18);--edge:rgba(255,255,255,.22);--blur:12px;--shadow-dark:rgba(0,0,0,.52);--pill-bg:rgba(255,255,255,.88);--shadow-light:rgba(255,255,255,.04);--nav-glow-rgb:168,201,255;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
-@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#fff;--fg:#101010;--mute:#777;--line:#e8e8e8;--glass:rgba(255,255,255,.35);--pill:rgba(0,0,0,.1);--edge:rgba(0,0,0,.12);--shadow-dark:rgba(148,160,181,.36);--pill-bg:rgba(0,0,0,.08);--shadow-light:rgba(255,255,255,.78);--nav-glow-rgb:205,228,255}}
-:root[data-theme="light"]{--bg:#fff;--fg:#101010;--mute:#777;--line:#e8e8e8;--glass:rgba(255,255,255,.35);--pill:rgba(0,0,0,.1);--edge:rgba(0,0,0,.12);--shadow-dark:rgba(148,160,181,.36);--pill-bg:rgba(0,0,0,.08);--shadow-light:rgba(255,255,255,.78);--nav-glow-rgb:205,228,255}
+:root{--bg:#000000;--fg:#ffffff;--mute:#737373;--line:#262626;--glass:rgba(20,20,20,.65);--pill:rgba(255,255,255,.12);--edge:rgba(255,255,255,.15);--blur:12px;--shadow-dark:rgba(0,0,0,.8);--pill-bg:rgba(255,255,255,.92);--shadow-light:rgba(255,255,255,.04);--nav-glow-rgb:168,201,255;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]){--bg:#ffffff;--fg:#000000;--mute:#737373;--line:#e5e5e5;--glass:rgba(255,255,255,.45);--pill:rgba(0,0,0,.06);--edge:rgba(0,0,0,.1);--shadow-dark:rgba(148,160,181,.36);--pill-bg:rgba(0,0,0,.08);--shadow-light:rgba(255,255,255,.8);--nav-glow-rgb:205,228,255}}
+:root[data-theme="light"]{--bg:#ffffff;--fg:#000000;--mute:#737373;--line:#e5e5e5;--glass:rgba(255,255,255,.45);--pill:rgba(0,0,0,.06);--edge:rgba(0,0,0,.1);--shadow-dark:rgba(148,160,181,.36);--pill-bg:rgba(0,0,0,.08);--shadow-light:rgba(255,255,255,.8);--nav-glow-rgb:205,228,255}
+:root[data-theme="dark"]{--bg:#000000;--fg:#ffffff;--mute:#737373;--line:#262626;--glass:rgba(20,20,20,.65);--pill:rgba(255,255,255,.12);--edge:rgba(255,255,255,.15);--shadow-dark:rgba(0,0,0,.8);--pill-bg:rgba(255,255,255,.92);--shadow-light:rgba(255,255,255,.04);--nav-glow-rgb:168,201,255}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;height:100%}
 body{background:var(--bg);color:var(--fg);font-family:-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;display:flex;justify-content:center}
@@ -23,22 +24,26 @@ h1{font-size:22px;margin:6px 0 14px;letter-spacing:-.3px}
 .name{font-weight:600;font-size:15px}.name span{color:var(--mute);font-weight:400;margin-left:6px}
 .txt{margin:3px 0 10px;line-height:1.4;font-size:15px;overflow-wrap:anywhere}
 .acts{display:flex;gap:18px;color:var(--mute);font-size:14px}
-.acts button{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px}
+.acts button{all:unset;cursor:pointer;display:flex;align-items:center;gap:6px;transition:color .2s}
+.acts button:active{opacity:.6}
 .acts button.liked{color:#ff3040}
 .row{display:flex;align-items:center;justify-content:space-between;padding:14px 0;border-bottom:1px solid var(--line)}
 .card{padding:16px 0}
-.card p{color:var(--mute);font-size:13px;margin:4px 0 0;line-height:1.4}
-.btn{background:var(--fg);color:var(--bg);border:0;border-radius:12px;padding:10px 16px;font-weight:600;font-size:15px;cursor:pointer}
+.card p{color:var(--mute);font-size:14px;margin:6px 0 0;line-height:1.4}
+.btn{background:var(--fg);color:var(--bg);border:1px solid var(--line);border-radius:12px;padding:10px 16px;font-weight:600;font-size:15px;cursor:pointer;transition:transform .1s}
+.btn:active{transform:scale(.96)}
 textarea{width:100%;min-height:140px;background:transparent;color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px;font:inherit;resize:none;margin-bottom:12px}
+textarea::placeholder{color:var(--mute)}
 .profile-head{display:flex;justify-content:space-between;align-items:center}
-.gear{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--pill)}
+.gear{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;border-radius:50%;background:var(--pill);transition:transform .1s}
+.gear:active{transform:scale(.92)}
 
 /* developed © Maxuiux */
 .slider-container {
   position: relative;
   width: 320px;
   height: 10px;
-  background: #D6D6DA;
+  background: var(--pill);
   border-radius: 999px;
 }
 
@@ -60,8 +65,8 @@ textarea{width:100%;min-height:140px;background:transparent;color:var(--fg);bord
   border-radius: 999px;
   cursor: pointer;
   z-index: 2;
-  background-color: #fff;
-  box-shadow: 0 1px 8px 0 rgba(0, 30, 63, 0.1), 0 0 2px 0 rgba(0, 9, 20, 0.1);
+  background-color: #ffffff;
+  box-shadow: 0 1px 8px 0 rgba(0, 0, 0, 0.1), 0 0 2px 0 rgba(0, 0, 0, 0.15);
   overflow: hidden;
   transition: transform 0.15s ease, height 0.15s ease;
 }
@@ -116,33 +121,38 @@ textarea{width:100%;min-height:140px;background:transparent;color:var(--fg);bord
 }
 /* developed © Maxuiux */
 
-/* só para caber no app (não altera o slider) */
 .slider-wrap{padding:26px 36px 14px;touch-action:none}
 .slider-wrap .slider-container{width:100%}
 .val{display:flex;justify-content:space-between;color:var(--mute);font-size:13px;margin:0 6px}
 
 /* Barra inferior */
-.nav{position:absolute;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));height:68px;border-radius:34px;display:flex;align-items:center;padding:6px;gap:2px;background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(var(--blur)) saturate(1.7) brightness(var(--bright,1));-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7) brightness(var(--bright,1));box-shadow:inset 1px 1px 1px rgba(255,255,255,.25),0 10px 30px rgba(0,0,0,.35);z-index:5}
+.nav{position:absolute;left:14px;right:14px;bottom:calc(14px + env(safe-area-inset-bottom,0px));height:68px;border-radius:34px;display:flex;align-items:center;padding:6px;gap:2px;background:var(--glass);border:1px solid var(--edge);backdrop-filter:blur(var(--blur)) saturate(1.7) brightness(var(--bright,1));-webkit-backdrop-filter:blur(var(--blur)) saturate(1.7) brightness(var(--bright,1));box-shadow:0 10px 30px rgba(0,0,0,.25);z-index:5}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .nav{box-shadow:inset 1px 1px 1px rgba(255,255,255,.6),0 10px 30px rgba(0,0,0,.08);}}
+:root[data-theme="light"] .nav{box-shadow:inset 1px 1px 1px rgba(255,255,255,.6),0 10px 30px rgba(0,0,0,.08);}
+
 .tab{all:unset;cursor:pointer;flex:1;height:100%;border-radius:28px;display:grid;place-items:center;position:relative;color:var(--fg);transition:background .2s}
 .tab svg{width:28px;height:28px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round;transition:fill .2s ease}
 .tab.on svg.fill{fill:currentColor}
 .dot{position:absolute;top:20px;right:calc(50% - 15px);width:8px;height:8px;border-radius:50%;background:#ff3040}
 .dot.hide{display:none}
 
-/* Indicador deslizante (estilo iOS 26) */
+/* Indicador deslizante (Pílula) plano no escuro e iluminado no claro */
 .nav{touch-action:none;--gx:50%;--gy:50%;--ga:0;transition:transform .28s cubic-bezier(.22,1,.36,1)}
 .nav.engaged{transform:scale(1.03)}
 .nav-glow{position:absolute;inset:0;border-radius:999px;clip-path:inset(0 round 999px);pointer-events:none;z-index:0;background:radial-gradient(240px 150px at var(--gx) var(--gy),rgba(var(--nav-glow-rgb),var(--ga)) 0%,rgba(var(--nav-glow-rgb),0) 74%);transition:background .18s ease}
 .tab{z-index:2}
-.tab-indicator{position:absolute;left:6px;top:6px;height:calc(100% - 12px);width:60px;border-radius:999px;z-index:6;pointer-events:none;transform-origin:center center;will-change:left,width,transform;background:var(--pill);box-shadow:inset 0 1px 0 rgba(255,255,255,.46),10px 10px 24px var(--shadow-dark),-8px -8px 20px var(--shadow-light);transition:left .24s cubic-bezier(.2,.9,.22,1),width .24s cubic-bezier(.2,.9,.22,1),transform .25s ease,background-color .25s ease,box-shadow .25s ease}
-.tab-indicator.interacting{z-index:999;transform:scale(1.45,1.5);background:var(--pill)}
-.nav.dragging .tab-indicator{transition:transform .2s ease,background-color .2s ease,box-shadow .2s ease}
+.tab-indicator{position:absolute;left:6px;top:6px;height:calc(100% - 12px);width:60px;border-radius:999px;z-index:6;pointer-events:none;transform-origin:center center;will-change:left,width,transform;background:var(--pill);box-shadow:none;transition:left .2s cubic-bezier(.2,.9,.22,1),width .2s cubic-bezier(.2,.9,.22,1),transform .15s ease,background-color .15s ease,box-shadow .15s ease}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .tab-indicator{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),10px 10px 24px var(--shadow-dark),-8px -8px 20px var(--shadow-light);}}
+:root[data-theme="light"] .tab-indicator{box-shadow:inset 0 1px 0 rgba(255,255,255,.6),10px 10px 24px var(--shadow-dark),-8px -8px 20px var(--shadow-light);}
+
+.tab-indicator.interacting{z-index:999;transform:scale(1.45,1.5);background:var(--pill);transition:transform .12s cubic-bezier(.2,1,.3,1)}
+.nav.dragging .tab-indicator{transition:none}
 .head{position:absolute;top:0;left:0;right:0;height:88px;display:grid;place-items:start center;padding-top:14px;font-weight:800;font-size:17px;letter-spacing:-.2px;z-index:4;pointer-events:none;opacity:0;transform:translateY(-10px);transition:opacity .25s ease,transform .25s ease;background:linear-gradient(to bottom,var(--bg) 0%,color-mix(in srgb,var(--bg) 80%,transparent) 50%,transparent 100%)}
 .hb{display:flex;align-items:center;gap:7px}
 .head.show{opacity:1;transform:none}
 .tab{transition:color .2s ease}
 
-/* Liquid toggle (CSS do usuário) */
+/* Liquid toggle */
 @layer toggle,transitions;
 @layer transitions{
 :root{--transition:.2s;--ease:ease-out}
@@ -177,23 +187,19 @@ textarea{width:100%;min-height:140px;background:transparent;color:var(--fg);bord
 .liquid-toggle.sm{--width:84;--height:38;--border:3px}
 .chromium .slider-thumb-glass.active .slider-thumb-glass-filter,.chromium .slider-thumb-glass.active .slider-thumb-glass-overlay,.chromium .slider-thumb-glass.active .slider-thumb-glass-specular{opacity:0}
 :root{--spring:linear(0 0%,.6091 3.69%,1.0259 7.24%,1.1733 9.05%,1.283 10.92%,1.3562 12.87%,1.3948 14.95%,1.4014 16.03%,1.3999 17.16%,1.3731 19.64%,1.3202 22.27%,1.1394 29.39%,1.0582 33.17%,.9943 37.45%,.9734 39.64%,.9593 41.92%,.9505 45.08%,.9517 48.7%,.9924 63.02%,1.0046 71.2%,1.0061 78.24%,1 100%)}
-.tab-indicator{transition:left .24s cubic-bezier(.2,.9,.22,1),width .24s cubic-bezier(.2,.9,.22,1),transform .6s var(--spring),background-color .25s ease,box-shadow .25s ease}
-.nav.dragging .tab-indicator{transition:transform .6s var(--spring),background-color .2s ease,box-shadow .2s ease}
+.tab-indicator{transition:left .2s cubic-bezier(.2,.9,.22,1),width .2s cubic-bezier(.2,.9,.22,1),transform .15s ease,background-color .15s ease,box-shadow .15s ease}
+.nav.dragging .tab-indicator{transition:none}
 .slider-thumb-glass{transition:transform .6s var(--spring),height .15s ease}
 .slider-thumb-glass.active,.slider-thumb-glass.active:active{transform:translate(-50%,-50%) scale(1.18,1.1)}
-@keyframes pillPulse{0%,100%{transform:scale(1.45,1.5)}50%{transform:scale(1.4,1.46)}}
-@keyframes thumbPulse{0%,100%{transform:translate(-50%,-50%) scale(1.18,1.1)}50%{transform:translate(-50%,-50%) scale(1.15,1.08)}}
-.tab-indicator.interacting.sliding{animation:pillPulse .9s ease-in-out infinite}
-.slider-thumb-glass.active.sliding{animation:thumbPulse .9s ease-in-out infinite}
-@media (prefers-reduced-motion:reduce){.tab-indicator.interacting.sliding,.slider-thumb-glass.active.sliding{animation:none}}
+@media (prefers-reduced-motion:reduce){.slider-thumb-glass.active.sliding{animation:none}}
 .slider-progress{transition:transform .35s var(--spring),filter .25s ease,box-shadow .25s ease;transform-origin:left center}
 [data-pressed=true] .liquid__track{min-height:30px}
 .tab svg{transition:fill .2s ease,filter .3s ease,opacity .3s ease}
 .tab svg,.tab .dot{filter:none!important}
-/* visual do feed igual ao app do Threads */
 .av{width:44px;height:44px}
 .topbar{display:grid;grid-template-columns:44px 1fr 44px;align-items:center;margin:0 -8px 4px}
-.topbar .tb{all:unset;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;color:var(--mute)}
+.topbar .tb{all:unset;cursor:pointer;width:44px;height:44px;display:grid;place-items:center;color:var(--mute);transition:color .1s}
+.topbar .tb:active{color:var(--fg)}
 .topbar .tb svg{width:26px;height:26px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .topbar .logo{margin:0}
 .composer{display:flex;gap:12px;align-items:center;padding:12px 0 16px;border-bottom:1px solid var(--line);cursor:pointer}
@@ -206,36 +212,40 @@ textarea{width:100%;min-height:140px;background:transparent;color:var(--fg);bord
 .post.th::before{content:'';position:absolute;left:21px;top:66px;bottom:0;width:2px;border-radius:2px;background:var(--line)}
 .name{display:flex;align-items:center;gap:6px}.name span{margin-left:0}
 .vf{width:14px;height:14px;flex:none}
-.more{all:unset;cursor:pointer;margin-left:auto;color:var(--fg);font-weight:800;letter-spacing:1px;padding:0 4px}
+.more{all:unset;cursor:pointer;margin-left:auto;color:var(--mute);font-weight:800;letter-spacing:1px;padding:0 4px;transition:color .2s}
+.more:active{color:var(--fg)}
 .txt{margin:4px 0 10px}
 .acts{gap:20px;align-items:center}
-.acts svg.ic{width:22px;height:22px;fill:none;stroke:var(--fg);stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.acts svg.ic{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
 .acts button.liked svg.ic{fill:#ff3040;stroke:#ff3040}
 .sbar{display:flex;gap:6px;align-items:center;margin-bottom:8px}.sbar .back{all:unset;cursor:pointer;width:40px;height:40px;display:grid;place-items:center;font-size:28px;color:var(--fg)}
-.sin{flex:1;min-width:0;background:var(--pill);color:var(--fg);border:0;border-radius:14px;padding:12px 14px;font:inherit;font-size:16px}
-.btn.sm{padding:7px 14px;font-size:13px}.btn.sm.on{background:var(--pill);color:var(--fg)}
-#drawer{position:absolute;inset:0;z-index:30}#drawer[hidden]{display:none}.dbg{position:absolute;inset:0;background:rgba(0,0,0,.4)}
-.dpn{position:absolute;left:0;top:0;bottom:0;width:74%;max-width:300px;background:var(--bg);color:var(--fg);padding:calc(24px + env(safe-area-inset-top,0px)) 20px;box-shadow:10px 0 40px rgba(0,0,0,.3);display:flex;flex-direction:column;gap:4px}
-.dpn button{all:unset;cursor:pointer;padding:14px 8px;font-size:18px;font-weight:600;border-radius:12px}.dpn button:active{background:var(--pill)}
+.sin{flex:1;min-width:0;background:var(--pill);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;font:inherit;font-size:16px}
+.sin::placeholder{color:var(--mute)}
+.btn.sm{padding:7px 14px;font-size:13px}.btn.sm.on{background:var(--pill);color:var(--fg);border-color:transparent}
+#drawer{position:absolute;inset:0;z-index:30}#drawer[hidden]{display:none}.dbg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
+.dpn{position:absolute;left:0;top:0;bottom:0;width:74%;max-width:300px;background:var(--bg);color:var(--fg);padding:calc(24px + env(safe-area-inset-top,0px)) 20px;box-shadow:10px 0 40px rgba(0,0,0,.5);display:flex;flex-direction:column;gap:4px;border-right:1px solid var(--line)}
+.dpn button{all:unset;cursor:pointer;padding:14px 12px;font-size:17px;font-weight:600;border-radius:12px;transition:background .1s}.dpn button:active{background:var(--pill)}
 .gl{width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.lang-row{cursor:pointer}.cur{color:var(--mute);font-weight:500}
+.lang-row{cursor:pointer;transition:opacity .1s}.lang-row:active{opacity:.6}.cur{color:var(--mute);font-weight:500}
 #lang{position:absolute;inset:0;z-index:40;display:grid;place-items:center;padding:20px}#lang[hidden]{display:none}
-.lbg{position:absolute;inset:0;background:rgba(0,0,0,.5);animation:lfade .3s ease}
+.lbg{position:absolute;inset:0;background:rgba(0,0,0,.6);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);animation:lfade .3s ease}
 .lcard{position:relative;width:min(100%,400px);min-height:min(600px,86%);max-height:92%;display:flex;flex-direction:column;align-items:center;padding:30px 20px 20px;border-radius:46px;
- background:rgba(145,145,150,.62);backdrop-filter:blur(26px) saturate(1.7);-webkit-backdrop-filter:blur(26px) saturate(1.7);border:1px solid rgba(255,255,255,.6);
- box-shadow:inset 0 1px 1px rgba(255,255,255,.6),inset 0 -1px 1px rgba(255,255,255,.2),0 30px 70px rgba(0,0,0,.4);color:#111;animation:lpop .45s cubic-bezier(.2,1.3,.4,1)}
+ background:rgba(20,20,20,.85);backdrop-filter:blur(26px) saturate(1.7);-webkit-backdrop-filter:blur(26px) saturate(1.7);border:1px solid var(--edge);
+ box-shadow:0 30px 70px rgba(0,0,0,.8);color:var(--fg);animation:lpop .45s cubic-bezier(.2,1.3,.4,1)}
+@media (prefers-color-scheme:light){:root:not([data-theme="dark"]) .lcard{background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.1);box-shadow:inset 0 1px 1px rgba(255,255,255,.8),0 30px 70px rgba(0,0,0,.2);color:#111}}
+:root[data-theme="light"] .lcard{background:rgba(255,255,255,.85);border:1px solid rgba(0,0,0,.1);box-shadow:inset 0 1px 1px rgba(255,255,255,.8),0 30px 70px rgba(0,0,0,.2);color:#111}
 @keyframes lpop{from{opacity:0;transform:scale(.88) translateY(16px)}to{opacity:1;transform:none}}@keyframes lfade{from{opacity:0}to{opacity:1}}
-.lglobe{width:84px;height:84px;fill:none;stroke:#111;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
-.lcard h2{margin:12px 0 6px;font-size:26px;letter-spacing:-.8px;text-align:center}.ld{margin:0;text-align:center;color:rgba(0,0,0,.5);font-size:16px;line-height:1.4}
-.llist{align-self:stretch;flex:1;overflow-y:auto;margin-top:18px;display:flex;flex-direction:column;gap:10px}
-.lrow{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-radius:22px;color:#111;font-size:18px;font-weight:600;background:rgba(255,255,255,.16);border:1px solid rgba(255,255,255,.3);transition:transform .2s cubic-bezier(.2,1.4,.4,1),background .2s}
-.lrow:active{transform:scale(.97)}.lrow.on{background:rgba(255,255,255,.36);border-color:rgba(255,255,255,.75)}
-.lck{width:24px;height:24px;border-radius:50%;border:2px solid rgba(0,0,0,.25);flex:none}
+.lglobe{width:84px;height:84px;fill:none;stroke:currentColor;stroke-width:1.5;stroke-linecap:round;stroke-linejoin:round;flex:none}
+.lcard h2{margin:12px 0 6px;font-size:26px;letter-spacing:-.8px;text-align:center}.ld{margin:0;text-align:center;color:var(--mute);font-size:15px;line-height:1.4}
+.llist{align-self:stretch;flex:1;overflow-y:auto;margin-top:18px;display:flex;flex-direction:column;gap:10px;padding:0 4px}
+.lrow{all:unset;cursor:pointer;display:flex;align-items:center;justify-content:space-between;padding:16px 18px;border-radius:22px;color:var(--fg);font-size:17px;font-weight:600;background:var(--pill);border:1px solid transparent;transition:transform .2s cubic-bezier(.2,1.4,.4,1),background .2s,border-color .2s}
+.lrow:active{transform:scale(.97)}.lrow.on{background:var(--glass);border-color:var(--edge)}
+.lck{width:24px;height:24px;border-radius:50%;border:2px solid var(--mute);flex:none;transition:border-color .2s,background .2s}
 .lrow.on .lck{border-color:#007aff;background:#007aff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24'%3E%3Cpath d='M6.5 12.5l3.5 3.5 7.5-8' fill='none' stroke='%23fff' stroke-width='3' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") center/80% no-repeat}
 .lbtns{align-self:stretch;display:flex;gap:12px;margin-top:18px}
-.lb{all:unset;cursor:pointer;flex:1;text-align:center;padding:16px 0;border-radius:999px;font-size:18px;font-weight:600;transition:transform .2s cubic-bezier(.2,1.4,.4,1)}.lb:active{transform:scale(.95)}
-.lb.sec{color:#1c1c1e;background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.55)}
-.lb.pri{color:#fff;background:#007aff;border:1px solid rgba(255,255,255,.3);box-shadow:0 6px 18px rgba(0,122,255,.35)}
+.lb{all:unset;cursor:pointer;flex:1;text-align:center;padding:16px 0;border-radius:999px;font-size:17px;font-weight:600;transition:transform .2s cubic-bezier(.2,1.4,.4,1)}.lb:active{transform:scale(.95)}
+.lb.sec{color:var(--fg);background:var(--pill);border:1px solid transparent}
+.lb.pri{color:#fff;background:#007aff;border:1px solid rgba(255,255,255,.1);box-shadow:0 6px 18px rgba(0,122,255,.35)}
 .wm{display:inline-flex;align-items:center;gap:.082em;font-size:30px;line-height:1;color:var(--fg)}
 .wg{height:.985em;width:auto;fill:currentColor;flex:none}
 .wt{height:.8em;width:auto;fill:currentColor;flex:none}
@@ -389,9 +399,9 @@ function render(){
  applyLang();
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-like]');if(!b)return;
- const k=b.dataset.like,i=+k.slice(1),list=k[0]=='m'?mine:posts;const p=k[0]=='m'?mine[i]:(i>=mine.length?posts[i-mine.length]:null)||posts[i];
+ const k=b.dataset.like,i=+k.slice(1);
  const q=k[0]=='m'?mine[i]:posts[i-(b.closest('#feed,#sres')?mine.length:0)];
- q.on=!q.on;q.l+=q.on?1:-1;render()});
+ if(q){q.on=!q.on;q.l+=q.on?1:-1;render()}});
 function go(v){$$('.view').forEach(s=>s.classList.toggle('on',s.id=='v-'+v));
  $$('.tab').forEach(t=>t.classList.toggle('on',t.dataset.v==(v=='set'?'me':v=='search'?'home':v)));
  if(v=='act')$('#dot').classList.add('hide');place(tabFor(v));sync();}
@@ -404,6 +414,7 @@ function pos(e){const r=nav.getBoundingClientRect(),k=r.width/nav.offsetWidth;re
 function move(e){const p=pos(e);nav.style.setProperty('--gx',p.x+'px');nav.style.setProperty('--gy',p.y+'px');
  if(!drag)return;if(Math.abs(e.clientX-pressX)>6)ind.classList.add('sliding');const w=ind.offsetWidth,lo=tabs[0].offsetLeft,hi=tabs[tabs.length-1].offsetLeft+tabs[tabs.length-1].offsetWidth-w;
  const l=Math.max(lo,Math.min(hi,p.x-w/2));ind.style.left=l+'px';queueGlass();const c=l+w/2,near=tabs.reduce((a,b)=>Math.abs(b.offsetLeft+b.offsetWidth/2-c)<Math.abs(a.offsetLeft+a.offsetWidth/2-c)?b:a);tabs.forEach(t=>t.classList.toggle('hot',t===near))}
+
 let pressT=0,relT=null,pressX=0;
 nav.addEventListener('pointerdown',e=>{pressT=performance.now();pressX=e.clientX;clearTimeout(relT);drag=true;nav.setPointerCapture(e.pointerId);nav.classList.add('engaged','dragging');ind.classList.add('interacting');nav.style.setProperty('--ga',.55);beginGlass();move(e)});
 nav.addEventListener('pointermove',move);
@@ -431,8 +442,7 @@ document.addEventListener('click',e=>{const f=e.target.closest('[data-fol]');if(
 $('#composer').onclick=()=>go('new');$('#back').onclick=()=>go('me');
 $('#publish').onclick=()=>{const v=$('#draft').value.trim();if(!v)return;mine.unshift({n:'seu.perfil',t:'agora',x:v,l:0});$('#draft').value='';render();go('home')};
 
-/* ===== Vidro líquido da barra: refração (Snell) + brilho, com a config DEFAULT_CONFIG ===== */
-/* ===== Vidro líquido: port da biblioteca lg_demo (refração + brilho) ===== */
+/* Vidro líquido da barra */
 const DEFAULT_CONFIG={glassThickness:80,bezelWidth:40,ior:1.4,scaleRatio:1.0,blur:1,specularOpacity:.6,specularSat:0,tintColor:'255,255,255',tintOpacity:0,innerShadow:'rgba(255,255,255,0)',innerShadowBlur:0,innerShadowSpread:0,balancedSpecular:false};
 const DEFAULT_SWITCHER_CONFIG={glassThickness:30,bezelWidth:40,ior:1.4,scaleRatio:1.0,blur:0,specularOpacity:.5,specularSat:0,tintColor:'255,255,255',tintOpacity:0,innerShadow:'rgba(255,255,255,0)',innerShadowBlur:0,innerShadowSpread:0,balancedSpecular:true};
 let config=JSON.parse(JSON.stringify(DEFAULT_CONFIG)),switcherConfig=JSON.parse(JSON.stringify(DEFAULT_SWITCHER_CONFIG));
@@ -474,7 +484,7 @@ function buildFilter(id,w,h,radius,cfg){const bezel=Math.min(cfg.bezelWidth,radi
   comp=svgEl('feComposite',{in:'displaced_sat',in2:'spec_layer',operator:'in',result:'spec_masked'}),tr=svgEl('feComponentTransfer',{in:'spec_layer',result:'spec_faded'});
  tr.appendChild(svgEl('feFuncA',{type:'linear',slope:cfg.specularOpacity}));
  const b1=svgEl('feBlend',{in:'spec_masked',in2:'displaced',mode:'normal',result:'with_sat'}),b2=svgEl('feBlend',{in:'spec_faded',in2:'with_sat',mode:'normal'});
- if(disp>0){/* dispersão: canais deslocados em quantidades diferentes (franjas amareladas e arroxeadas) */
+ if(disp>0){
   const ch=(k,sc,m)=>[svgEl('feDisplacementMap',{in:'blurred',in2:'disp_map',scale:sc,xChannelSelector:'R',yChannelSelector:'G',result:'d'+k}),svgEl('feColorMatrix',{in:'d'+k,type:'matrix',values:m,result:'c'+k})];
   const R=ch('r',scale,'1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 1 0'),G=ch('g',scale*(1+disp*.25),'0 0 0 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 1 0'),B=ch('b',scale*(1+disp),'0 0 0 0 0 0 0 0 0 0 0 0 1 0 0 0 0 0 1 0');
   const x1=svgEl('feBlend',{in:'cr',in2:'cg',mode:'screen',result:'crg'}),x2=svgEl('feBlend',{in:'crg',in2:'cb',mode:'screen',result:'displaced'});
@@ -494,7 +504,6 @@ function applyGlass(el,cfgGetter){if(lgTargets.has(el))return;if(getComputedStyl
 function removeGlass(el){const i=lgTargets.get(el);if(!i)return;i.destroy();lgTargets.delete(el)}
 function enableGlass(el,g){if(!lgTargets.has(el))applyGlass(el,g);else lgTargets.get(el).rebuild()}
 function rebuildAll(){lgTargets.forEach(i=>i.rebuild());buildNavGlass()}
-/* vidro da barra inferior: mesmo filtro, aplicado direto na barra (config padrão) */
 function buildNavGlass(){if(!chromium)return;const w=nav.offsetWidth,h=nav.offsetHeight;if(w<4||h<4)return;ensureDefs();
  const r=Math.min(h/2,w/2),id='demo-lg-nav-'+Math.random().toString(36).slice(2,8),f=buildFilter(id,w,h,r,config);if(navFilter)navFilter.remove();navFilter=f;lgDefs.appendChild(f);
  const v='blur(var(--blur)) url(#'+id+') saturate(1.7) brightness(var(--bright,1))';nav.style.backdropFilter=v;nav.style.webkitBackdropFilter=v}
@@ -503,7 +512,6 @@ function queueGlass(){if(glassQ)return;glassQ=true;requestAnimationFrame(()=>{gl
 function beginGlass(){clearTimeout(glassEndTimer);if(!chromium)return;enableGlass(ind,()=>({...switcherConfig,balancedSpecular:true}));queueGlass()}
 function endGlass(d){clearTimeout(glassEndTimer);glassEndTimer=setTimeout(()=>removeGlass(ind),500+(d||0))}
 
-/* Sliders de vidro: desfoque e distorção */
 function glassSlider(sfx,max,unit,def,key,apply){
  const sl=$('#slider'+sfx),th=$('#thumb'+sfx),pr=$('#progress'+sfx),lab=$('#val'+sfx);
  function set(v,save){v=Math.round(Math.max(0,Math.min(max,v)));apply(v);const p=v/max*100;pr.style.width=p+'%';th.style.left=p+'%';lab.textContent=v+unit;if(save)store.set(key,v)}
@@ -517,7 +525,6 @@ glassSlider('',40,' px',12,'tg-blur',v=>document.documentElement.style.setProper
 glassSlider('3',160,'%',100,'tg-bright',v=>document.documentElement.style.setProperty('--bright',v/100));
 glassSlider('2',120,'',50,'tg-dist',v=>{config.scaleRatio=v/50;switcherConfig.scaleRatio=v/50;if(typeof navReady!=='undefined'&&navReady)rebuildAll()});
 
-/* Lente da barra: mapa de deslocamento nas bordas da pílula (Chrome/Edge) */
 const chromium=/Chrome|Edg/.test(navigator.userAgent)&&!/iPhone|iPad|CriOS/.test(navigator.userAgent);
 if(chromium)document.documentElement.classList.add('chromium');
 if(chromium){requestAnimationFrame(()=>{navReady=true;buildNavGlass()});new ResizeObserver(()=>{if(navReady)buildNavGlass()}).observe(nav)}
@@ -536,8 +543,8 @@ function mkToggle(el,on,cb){el.innerHTML=TG;el.dataset.mapped='false';el.dataset
  el.addEventListener('keydown',e=>{if(e.key===' '||e.key==='Enter'){e.preventDefault();set(!v)}})}
 const dark=()=>(document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme:light)').matches?'light':'dark'))=='dark';
 mkToggle($('#tTheme'),dark(),v=>{document.documentElement.dataset.theme=v?'dark':'light';store.set('tg-theme',v?'dark':'light')});
-/* ===== Idioma (tradução da interface) ===== */
-const I18N={"Quais são as novidades?": {"en": "What's new?", "es": "¿Qué hay de nuevo?", "fr": "Quoi de neuf ?"}, "Mensagens": {"en": "Messages", "es": "Mensajes", "fr": "Messages"}, "Nenhuma mensagem ainda": {"en": "No messages yet", "es": "Aún no hay mensajes", "fr": "Aucun message pour l'instant"}, "Quando alguém te escrever, a conversa aparece aqui.": {"en": "When someone writes to you, the conversation shows up here.", "es": "Cuando alguien te escriba, la conversación aparecerá aquí.", "fr": "Quand quelqu'un t'écrit, la conversation apparaît ici."}, "Nova thread": {"en": "New thread", "es": "Nuevo hilo", "fr": "Nouveau fil"}, "Publicar": {"en": "Post", "es": "Publicar", "fr": "Publier"}, "Atividade": {"en": "Activity", "es": "Actividad", "fr": "Activité"}, "curtiu sua thread": {"en": "liked your thread", "es": "le gustó tu hilo", "fr": "a aimé ton fil"}, "começou a seguir você": {"en": "started following you", "es": "empezó a seguirte", "fr": "a commencé à te suivre"}, "Sua conta": {"en": "Your account", "es": "Tu cuenta", "fr": "Ton compte"}, "Toque na engrenagem para ajustar o desfoque da barra.": {"en": "Tap the gear to adjust the bar blur.", "es": "Toca el engranaje para ajustar el desenfoque de la barra.", "fr": "Touche l'engrenage pour régler le flou de la barre."}, "Configurações": {"en": "Settings", "es": "Ajustes", "fr": "Réglages"}, "Desfoque da barra": {"en": "Bar blur", "es": "Desenfoque de la barra", "fr": "Flou de la barre"}, "Arraste para mudar o quanto o fundo fica borrado atrás da barra inferior.": {"en": "Drag to change how blurred the background is behind the bottom bar.", "es": "Arrastra para cambiar cuánto se desenfoca el fondo detrás de la barra inferior.", "fr": "Fais glisser pour changer le flou de l'arrière-plan derrière la barre du bas."}, "Nítido": {"en": "Sharp", "es": "Nítido", "fr": "Net"}, "Muito borrado": {"en": "Very blurred", "es": "Muy borroso", "fr": "Très flou"}, "Distorção da barra": {"en": "Bar distortion", "es": "Distorsión de la barra", "fr": "Distorsion de la barre"}, "Arraste para mudar a refração do vidro na barra e na pílula (50 é o padrão). Só aparece no Chrome e no Edge.": {"en": "Drag to change the glass refraction on the bar and the pill (50 is the default). Only shows in Chrome and Edge.", "es": "Arrastra para cambiar la refracción del vidrio en la barra y la píldora (50 es el valor por defecto). Solo se ve en Chrome y Edge.", "fr": "Fais glisser pour changer la réfraction du verre sur la barre et la pilule (50 par défaut). Visible seulement dans Chrome et Edge."}, "Reto": {"en": "Flat", "es": "Recto", "fr": "Droit"}, "Muito curvo": {"en": "Very curved", "es": "Muy curvo", "fr": "Très courbe"}, "Brilho da barra": {"en": "Bar brightness", "es": "Brillo de la barra", "fr": "Luminosité de la barre"}, "Clareia ou escurece o vidro da barra inferior.": {"en": "Lightens or darkens the glass of the bottom bar.", "es": "Aclara u oscurece el vidrio de la barra inferior.", "fr": "Éclaircit ou assombrit le verre de la barre du bas."}, "Escuro": {"en": "Dark", "es": "Oscuro", "fr": "Sombre"}, "Claro": {"en": "Light", "es": "Claro", "fr": "Clair"}, "Tema escuro": {"en": "Dark theme", "es": "Tema oscuro", "fr": "Thème sombre"}, "Voltar ao perfil": {"en": "Back to profile", "es": "Volver al perfil", "fr": "Retour au profil"}, "Voltar": {"en": "Back", "es": "Volver", "fr": "Retour"}, "Perfil": {"en": "Profile", "es": "Perfil", "fr": "Profil"}, "Pesquisar": {"en": "Search", "es": "Buscar", "fr": "Rechercher"}, "O que está rolando?": {"en": "What's happening?", "es": "¿Qué está pasando?", "fr": "Quoi de neuf ?"}, "Sugestões para seguir": {"en": "Suggestions to follow", "es": "Sugerencias para seguir", "fr": "Suggestions à suivre"}, "Seguir": {"en": "Follow", "es": "Seguir", "fr": "Suivre"}, "Seguindo": {"en": "Following", "es": "Siguiendo", "fr": "Suivi"}, "Nenhum resultado para": {"en": "No results for", "es": "Sin resultados para", "fr": "Aucun résultat pour"}, "agora": {"en": "now", "es": "ahora", "fr": "maintenant"}, "Idioma": {"en": "Language", "es": "Idioma", "fr": "Langue"}, "Escolher idioma": {"en": "Choose language", "es": "Elegir idioma", "fr": "Choisir la langue"}, "Escolha o idioma do app. A mudança vale na hora.": {"en": "Choose the app language. The change applies right away.", "es": "Elige el idioma de la app. El cambio se aplica al instante.", "fr": "Choisis la langue de l'app. Le changement s'applique tout de suite."}, "Agora não": {"en": "Not Now", "es": "Ahora no", "fr": "Pas maintenant"}, "Definir": {"en": "Set", "es": "Establecer", "fr": "Définir"}, "Blur nenhum, blur demais… qual o seu ponto ideal na barra de baixo? 👀": {"en": "No blur, way too much blur… what's your sweet spot on the bottom bar? 👀", "es": "Nada de desenfoque, demasiado desenfoque… ¿cuál es tu punto ideal en la barra de abajo? 👀", "fr": "Aucun flou, trop de flou… quel est ton réglage idéal sur la barre du bas ? 👀"}, "Liquid glass em tudo. Meu celular parece uma gota d’água e eu gosto.": {"en": "Liquid glass on everything. My phone looks like a water drop and I like it.", "es": "Liquid glass en todo. Mi móvil parece una gota de agua y me gusta.", "fr": "Liquid glass partout. Mon téléphone ressemble à une goutte d'eau et j'aime ça."}, "Dica: se o texto atrás da barra ainda dá pra ler, aumenta o desfoque.": {"en": "Tip: if you can still read the text behind the bar, increase the blur.", "es": "Consejo: si aún se puede leer el texto detrás de la barra, sube el desenfoque.", "fr": "Astuce : si tu peux encore lire le texte derrière la barre, augmente le flou."}, "Café, fone e um app novo pra testar. Domingo perfeito.": {"en": "Coffee, headphones and a new app to test. Perfect Sunday.", "es": "Café, auriculares y una app nueva para probar. Domingo perfecto.", "fr": "Café, casque et une nouvelle app à tester. Dimanche parfait."}, "Terminei o protótipo hoje. Sempre falta um detalhe, mas ficou bom.": {"en": "Finished the prototype today. There's always one detail missing, but it turned out good.", "es": "Terminé el prototipo hoy. Siempre falta un detalle, pero quedó bien.", "fr": "J'ai fini le prototype aujourd'hui. Il manque toujours un détail, mais c'est bien."}, "Alguém mais acha que a barra flutuante ficou melhor que a fixa?": {"en": "Anyone else think the floating bar turned out better than the fixed one?", "es": "¿Alguien más cree que la barra flotante quedó mejor que la fija?", "fr": "Quelqu'un d'autre trouve que la barre flottante est mieux que la fixe ?"}};
+/* Idioma */
+const I18N={"Quais são as novidades?": {"en": "What's new?", "es": "¿Qué hay de nuevo?", "fr": "Quoi de neuf ?"}, "Mensagens": {"en": "Messages", "es": "Mensajes", "fr": "Messages"}, "Nenhuma mensagem ainda": {"en": "No messages yet", "es": "Aún no hay mensajes", "fr": "Aucun message pour l'instant"}, "Quando alguém te escrever, a conversa aparece aqui.": {"en": "When someone writes to you, the conversation shows up here.", "es": "Cuando alguien te escriba, la conversación aparecerá aquí.", "fr": "Quand quelqu'un t'écrit, la conversation apparaît ici."}, "Nova thread": {"en": "New thread", "es": "Nuevo hilo", "fr": "Nouveau fil"}, "Publicar": {"en": "Post", "es": "Publicar", "fr": "Publier"}, "Atividade": {"en": "Activity", "es": "Actividad", "fr": "Activité"}, "curtiu sua thread": {"en": "liked your thread", "es": "le gustó tu hilo", "fr": "a aimé ton fil"}, "começou a seguir você": {"en": "started following you", "es": "empezó a seguirte", "fr": "a commencé à te suivre"}, "Sua conta": {"en": "Your account", "es": "Tu cuenta", "fr": "Ton compte"}, "Toque na engrenagem para ajustar o desfoque da barra.": {"en": "Tap the gear to adjust the bar blur.", "es": "Toca el engranaje para ajustar el desenfoque de la barra.", "fr": "Touche l'engrenage pour régler le flou de la barre."}, "Configurações": {"en": "Settings", "es": "Ajustes", "fr": "Réglages"}, "Desfoque da barra": {"en": "Bar blur", "es": "Desenfoque de la barra", "fr": "Flou de la barre"}, "Arraste para mudar o quanto o fundo fica borrado atrás da barra inferior.": {"en": "Drag to change how blurred the background is behind the bottom bar.", "es": "Arrastra para cambiar cuánto se desenfoca el fondo detrás de la barra inferior.", "fr": "Fais glisser pour changer le flou de l'arrière-plan derrière la barre du bas."}, "Nítido": {"en": "Sharp", "es": "Nítido", "fr": "Net"}, "Muito borrado": {"en": "Very blurred", "es": "Muy borroso", "fr": "Très flou"}, "Distorção da barra": {"en": "Bar distortion", "es": "Distorsión de la barra", "fr": "Distorsion de la barra"}, "Arraste para mudar a refração do vidro na barra e na pílula (50 é o padrão). Só aparece no Chrome e no Edge.": {"en": "Drag to change the glass refraction on the bar and the pill (50 is the default). Only shows in Chrome and Edge.", "es": "Arrastra para cambiar la refracción del vidrio en la barra y la píldora (50 es el valor por defecto). Solo se ve en Chrome y Edge.", "fr": "Fais glisser pour changer la réfraction du verre sur la barre et la pilule (50 par défaut). Visible seulement dans Chrome et Edge."}, "Reto": {"en": "Flat", "es": "Recto", "fr": "Droit"}, "Muito curvo": {"en": "Very curved", "es": "Muy curvo", "fr": "Très courbe"}, "Brilho da barra": {"en": "Bar brightness", "es": "Brillo de la barra", "fr": "Luminosité de la barre"}, "Clareia ou escurece o vidro da barra inferior.": {"en": "Lightens or darkens the glass of the bottom bar.", "es": "Aclara u oscurece el vidrio de la barra inferior.", "fr": "Éclaircit ou assombrit le verre de la barre du bas."}, "Escuro": {"en": "Dark", "es": "Oscuro", "fr": "Sombre"}, "Claro": {"en": "Light", "es": "Claro", "fr": "Clair"}, "Tema escuro": {"en": "Dark theme", "es": "Tema oscuro", "fr": "Thème sombre"}, "Voltar ao perfil": {"en": "Back to profile", "es": "Volver al perfil", "fr": "Retour au profil"}, "Voltar": {"en": "Back", "es": "Volver", "fr": "Retour"}, "Perfil": {"en": "Profile", "es": "Perfil", "fr": "Perfil"}, "Pesquisar": {"en": "Search", "es": "Buscar", "fr": "Rechercher"}, "O que está rolando?": {"en": "What's happening?", "es": "¿Qué está pasando?", "fr": "Quoi de neuf ?"}, "Sugestões para seguir": {"en": "Suggestions to follow", "es": "Sugerencias para seguir", "fr": "Suggestions à suivre"}, "Seguir": {"en": "Follow", "es": "Seguir", "fr": "Suivre"}, "Seguindo": {"en": "Following", "es": "Siguiendo", "fr": "Suivi"}, "Nenhum resultado para": {"en": "No results for", "es": "Sin resultados para", "fr": "Aucun résultat pour"}, "agora": {"en": "now", "es": "ahora", "fr": "maintenant"}, "Idioma": {"en": "Language", "es": "Idioma", "fr": "Langue"}, "Escolher idioma": {"en": "Choose language", "es": "Elegir idioma", "fr": "Choisir la langue"}, "Escolha o idioma do app. A mudança vale na hora.": {"en": "Choose the app language. The change applies right away.", "es": "Elige el idioma de la app. El cambio se aplica al instante.", "fr": "Choisis la langue de l'app. Le changement s'applique tout de suite."}, "Agora não": {"en": "Not Now", "es": "Ahora no", "fr": "Pas maintenant"}, "Definir": {"en": "Set", "es": "Establecer", "fr": "Définir"}, "Blur nenhum, blur demais… qual o seu ponto ideal na barra de baixo? 👀": {"en": "No blur, way too much blur… what's your sweet spot on the bottom bar? 👀", "es": "Nada de desenfoque, demasiado desenfoque… ¿cuál es tu punto ideal en la barra de abajo? 👀", "fr": "Aucun flou, trop de flou… quel est ton réglage idéal sur la barre du bas ? 👀"}, "Liquid glass em tudo. Meu celular parece uma gota d’água e eu gosto.": {"en": "Liquid glass on everything. My phone looks like a water drop and I like it.", "es": "Liquid glass en todo. Mi móvil parece una gota de agua y me gusta.", "fr": "Liquid glass partout. Mon téléphone ressemble à une goutte d'eau et j'aime ça."}, "Dica: se o texto atrás da barra ainda dá pra ler, aumenta o desfoque.": {"en": "Tip: if you can still read the text behind the bar, increase the blur.", "es": "Consejo: si aún se puede leer el texto detrás de la barra, sube el desenfoque.", "fr": "Astuce : si tu peux encore lire le texte derrière la barre, augmente le flou."}, "Café, fone e um app novo pra testar. Domingo perfeito.": {"en": "Coffee, headphones and a new app to test. Perfect Sunday.", "es": "Café, auriculares y una app nueva para probar. Domingo perfecto.", "fr": "Café, casque et une nouvelle app à tester. Dimanche parfait."}, "Terminei o protótipo hoje. Sempre falta um detalhe, mas ficou bom.": {"en": "Finished the prototype today. There's always one detail missing, but it turned out good.", "es": "Terminé el prototipo hoy. Siempre falta un detalle, pero quedó bien.", "fr": "J'ai fini le prototype aujourd'hui. Il manque toujours un détail, mais c'est bien."}, "Alguém mais acha que a barra flutuante ficou melhor que a fixa?": {"en": "Anyone else think the floating bar turned out better than the fixed one?", "es": "¿Alguien más cree que la barra flotante quedó mejor que la fija?", "fr": "Quelqu'un d'autre trouve que la barre flottante est mieux que la fixe ?"}};
 const LANGS=[['pt','Português'],['en','English'],['es','Español'],['fr','Français']];
 let lang=store.get('tg-lang')||'pt',pend=lang;
 if(!LANGS.some(l=>l[0]===lang))lang='pt';
@@ -561,5 +568,4 @@ render();
 </script>
 </body>
 </html>
-
-</body></html>
+```
